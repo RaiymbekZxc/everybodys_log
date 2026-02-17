@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="200dp"
+    android:minHeight="80dp"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/persona_date_widget"
+    android:description="@string/persona_date_widget_description"
+    android:previewLayout="@layout/persona_date_widget"
+    android:resizeMode="none"
+    android:widgetCategory="home_screen"/>
