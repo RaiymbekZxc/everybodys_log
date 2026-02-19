@@ -33,6 +33,35 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/w6b" />
 
+    <ViewFlipper
+        android:id="@+id/bg_flipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:autoStart="true"
+        android:flipInterval="275">
+
+        <ImageView
+            android:id="@+id/weather1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitStart"
+            android:src="@drawable/wsun1" />
+
+        <ImageView
+            android:id="@+id/weather2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitStart"
+            android:src="@drawable/wsun2" />
+
+        <ImageView
+            android:id="@+id/weather3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitStart"
+            android:src="@drawable/wsun3" />
+    </ViewFlipper>
+
     <ImageView
         android:id="@+id/month"
         android:layout_width="wrap_content"

@@ -12,7 +12,6 @@ import android.content.ComponentName
 import android.os.Build
 import android.util.Log
 
-// мой код
 class PersonaDateWidgetProvider : AppWidgetProvider() {
 
     companion object {
@@ -90,6 +89,14 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
                 onUpdate(context, appWidgetManager, appWidgetIds)
             }
         }
+    }
+
+    private fun updateWeather(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int
+    ){
+
     }
 
     private fun updateAppWidget(
