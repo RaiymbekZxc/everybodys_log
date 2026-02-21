@@ -45,21 +45,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitStart"
-            android:src="@drawable/wsun1" />
+            android:src="@drawable/wwsun1" />
 
         <ImageView
             android:id="@+id/weather2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitStart"
-            android:src="@drawable/wsun2" />
+            android:src="@drawable/wwsun2" />
 
         <ImageView
             android:id="@+id/weather3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitStart"
-            android:src="@drawable/wsun3" />
+            android:src="@drawable/wwsun3" />
     </ViewFlipper>
 
     <ImageView

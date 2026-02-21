@@ -11,12 +11,34 @@ import android.widget.RemoteViews
 import android.content.ComponentName
 import android.os.Build
 import android.util.Log
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
 class PersonaDateWidgetProvider : AppWidgetProvider() {
-
     companion object {
-        const val ACTION_UPDATE_WIDGET_DAILY = "com.lexip.UPDATE_WIDGET_DAILY"
+        private const val WORK_WEATHER_ONCE = "weather_once"
+        private const val WORK_WEATHER_PERIODIC = "weather_periodic"
 
+        fun ensureWeatherWorkScheduled(context: Context){
+            val workManager = WorkManager.getInstance(context)
+
+            workManager.enqueueUniqueWork(
+                WORK_WEATHER_ONCE,
+                ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<WeatherWorker>().build()
+            )
+
+            workManager.enqueueUniquePeriodicWork(
+                WORK_WEATHER_PERIODIC,
+                ExistingPeriodicWorkPolicy.KEEP,
+                PeriodicWorkRequestBuilder<WeatherWorker>(30, TimeUnit.MINUTES).build()
+            )
+        }
+        const val ACTION_UPDATE_WIDGET_DAILY = "com.lexip.UPDATE_WIDGET_DAILY"
         fun safeScheduleDailyUpdate(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val calendar = Calendar.getInstance().apply {
@@ -46,7 +68,6 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
                         val settingsIntent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                         settingsIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         context.startActivity(settingsIntent)
-                        Log.e("PersonaWidget", "Точные будильники запрещены пользователем.")
                     }
                 } else {
                     alarmManager.setExactAndAllowWhileIdle(
@@ -56,7 +77,16 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
                     )
                 }
             } catch (e: SecurityException) {
-                Log.e("PersonaWidget", "Не удалось поставить точный будильник: ${e.message}")
+            }
+        }
+
+        fun updateAllWidgets(
+            applicationContext: Context,
+            appWidgetManager: AppWidgetManager,
+            widgetIds: IntArray
+        ) {
+            for (widgetId in widgetIds) {
+                PersonaDateWidgetProvider().updateAppWidget(applicationContext, appWidgetManager, widgetId)
             }
         }
     }
@@ -70,6 +100,7 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
             updateAppWidget(context, appWidgetManager, appWidgetId)
             Log.d("PersonaWidget", "Апдейт")
         }
+        ensureWeatherWorkScheduled(context)
         safeScheduleDailyUpdate(context)
     }
 
@@ -91,21 +122,13 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
         }
     }
 
-    private fun updateWeather(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetId: Int
-    ){
-
-    }
-
     private fun updateAppWidget(
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetId: Int
     ) {
-        val rightNow = Calendar.getInstance()
         val views = RemoteViews(context.packageName, R.layout.persona_date_widget)
+        val rightNow = Calendar.getInstance()
 
         // День
         val day = rightNow.get(Calendar.DAY_OF_MONTH)
@@ -117,9 +140,11 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
         val dayResId = context.resources.getIdentifier(currentDay, "drawable", context.packageName)
         val dayTopResId = context.resources.getIdentifier(currentDayTop, "drawable", context.packageName)
 
-        if (dayBottomResId != 0) views.setImageViewResource(R.id.day_bottom, dayBottomResId)
-        if (dayResId != 0) views.setImageViewResource(R.id.day, dayResId)
-        if (dayTopResId != 0) views.setImageViewResource(R.id.day_top, dayTopResId)
+        if (dayBottomResId != 0 && dayResId != 0 && dayTopResId != 0){
+            views.setImageViewResource(R.id.day_bottom, dayBottomResId)
+            views.setImageViewResource(R.id.day, dayResId)
+            views.setImageViewResource(R.id.day_top, dayTopResId)
+        }
 
         // Месяц
         val month = rightNow.get(Calendar.MONTH)
@@ -136,9 +161,11 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
         val monthResId = context.resources.getIdentifier(currentMonth, "drawable", context.packageName)
         val monthTopResId = context.resources.getIdentifier(currentMonthTop, "drawable", context.packageName)
 
-        if (monthBottomResId != 0) views.setImageViewResource(R.id.month_bottom, monthBottomResId)
-        if (monthResId != 0) views.setImageViewResource(R.id.month, monthResId)
-        if (monthTopResId != 0) views.setImageViewResource(R.id.month_top, monthTopResId)
+        if (monthBottomResId != 0 && monthResId != 0 && monthTopResId != 0){
+            views.setImageViewResource(R.id.month_bottom, monthBottomResId)
+            views.setImageViewResource(R.id.month, monthResId)
+            views.setImageViewResource(R.id.month_top, monthTopResId)
+        }
 
         // День недели
         val week = rightNow.get(Calendar.DAY_OF_WEEK)
@@ -150,9 +177,39 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
         val weekResId = context.resources.getIdentifier(currentWeek, "drawable", context.packageName)
         val weekTopResId = context.resources.getIdentifier(currentWeekTop, "drawable", context.packageName)
 
-        if (weekBottomResId != 0) views.setImageViewResource(R.id.week_bottom, weekBottomResId)
-        if (weekResId != 0) views.setImageViewResource(R.id.week, weekResId)
-        if (weekTopResId != 0) views.setImageViewResource(R.id.week_top, weekTopResId)
+        if (weekBottomResId != 0 && weekResId != 0 && weekTopResId != 0){
+            views.setImageViewResource(R.id.week_bottom, weekBottomResId)
+            views.setImageViewResource(R.id.week, weekResId)
+            views.setImageViewResource(R.id.week_top, weekTopResId)
+        }
+
+        // Иконка погоды
+        val prefs = context.getSharedPreferences("weather", Context.MODE_PRIVATE)
+        val code = prefs.getInt("code", 0)
+        var weather = when (code) {
+            0, 1 -> "sun"
+            2, 3 -> "cloud"
+            51, 53, 55, 56, 57, 61, 63, 65, 80, 81, 82, 95, 96, 99 -> "rain"
+            71, 73, 75, 77, 85, 86 -> "snow"
+            else -> "sun"
+            // 56, 57 — Freezing drizzle
+            // 66, 67 — Freezing rain
+            // 96, 99 — Thunderstorm with hail
+            // 45, 48 — Fog / Depositing rime fog
+        }
+
+        var currentWeather = "w${weather}"
+        if (rightNow.get(Calendar.DAY_OF_MONTH) >= 10) currentWeather = "ww${weather}"
+
+        val weatherResId1 = context.resources.getIdentifier("${currentWeather}1", "drawable", context.packageName)
+        val weatherResId2 = context.resources.getIdentifier("${currentWeather}2", "drawable", context.packageName)
+        val weatherResId3 = context.resources.getIdentifier("${currentWeather}3", "drawable", context.packageName)
+
+        if (weatherResId1 != 0 && weatherResId2 != 0 && weatherResId3 != 0){
+            views.setImageViewResource(R.id.weather1, weatherResId1)
+            views.setImageViewResource(R.id.weather2, weatherResId2)
+            views.setImageViewResource(R.id.weather3, weatherResId3)
+        }
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
