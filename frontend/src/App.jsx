@@ -1,12 +1,8 @@
-import { useState } from 'react'
+import React from 'react'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  return (<>
+    <h1 style={{ fontSize: 15 }}>HELLO</h1>
+  </>)
 
-  return (
-    <>
-    </>
-  )
 }
-
-export default App
