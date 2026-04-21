@@ -191,11 +191,11 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
             2, 3 -> "cloud"
             51, 53, 55, 56, 57, 61, 63, 65, 80, 81, 82, 95, 96, 99 -> "rain"
             71, 73, 75, 77, 85, 86 -> "snow"
+            45, 48 -> "fog"
             else -> "sun"
             // 56, 57 — Freezing drizzle
             // 66, 67 — Freezing rain
             // 96, 99 — Thunderstorm with hail
-            // 45, 48 — Fog / Depositing rime fog
         }
 
         var currentWeather = "w${weather}"
