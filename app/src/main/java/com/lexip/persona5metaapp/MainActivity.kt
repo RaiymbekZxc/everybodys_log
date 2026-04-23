@@ -20,10 +20,6 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
             val coarseGranted = result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
             val fineGranted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true
-
-            // Тут можно решить что делать дальше:
-            // - если coarseGranted || fineGranted -> можно запускать погоду/воркер
-            // - иначе показывать сообщение "без геолокации погода не будет работать"
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {

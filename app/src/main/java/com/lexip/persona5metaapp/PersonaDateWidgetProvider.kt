@@ -186,9 +186,10 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
         // Иконка погоды
         val prefs = context.getSharedPreferences("weather", Context.MODE_PRIVATE)
         val code = prefs.getInt("code", 0)
+        val isDay = prefs.getInt("is_day", 1)
         var weather = when (code) {
             0, 1 -> "sun"
-            2, 3 -> "cloud"
+            2, 3, 45, 48 -> "cloud"
             51, 53, 55, 56, 57, 61, 63, 65, 80, 81, 82, 95, 96, 99 -> "rain"
             71, 73, 75, 77, 85, 86 -> "snow"
             else -> "sun"
@@ -197,6 +198,9 @@ class PersonaDateWidgetProvider : AppWidgetProvider() {
             // 96, 99 — Thunderstorm with hail
             // 45, 48 — Fog / Depositing rime fog
         }
+
+        if (weather == "sun" && isDay == 0) weather = "moon"
+        Log.d("PersonaWidget", "Loaded: code=$code, isDay=$isDay")
 
         var currentWeather = "w${weather}"
         if (rightNow.get(Calendar.DAY_OF_MONTH) >= 10) currentWeather = "ww${weather}"
