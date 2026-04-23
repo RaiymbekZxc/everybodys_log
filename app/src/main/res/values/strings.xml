@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Persona5MetaApp</string>
+    <string name="first_widget_description">Простой виджет с текстом и картинкой</string>
+    <string name="persona_date_widget_description">Shows date</string>
+</resources>
