@@ -44,11 +44,13 @@ class WeatherWorker(
             val weather = api.getWeather(lat, lon)
 
             val weatherCode = weather.current?.weather_code ?: 0
+            val isDay = weather.current?.is_day ?: 1
 
             applicationContext
                 .getSharedPreferences("weather", Context.MODE_PRIVATE)
                 .edit()
                 .putInt("code", weatherCode)
+                .putInt("is_day", isDay)
                 .putFloat("lat", lat.toFloat())
                 .putFloat("lon", lon.toFloat())
                 .apply()
