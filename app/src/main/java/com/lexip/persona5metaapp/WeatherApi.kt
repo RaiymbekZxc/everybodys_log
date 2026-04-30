@@ -8,6 +8,6 @@ interface WeatherApi {
     suspend fun getWeather(
         @Query("latitude") lat: Double,
         @Query("longitude") lon: Double,
-        @Query("current") current: String = "temperature_2m,weather_code"
+        @Query("current") current: String = "temperature_2m,weather_code,is_day"
     ) : WeatherResponse
 }

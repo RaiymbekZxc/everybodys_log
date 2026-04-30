@@ -30,7 +30,7 @@ class WeatherWorker(
             if (location == null) {
                 return Result.retry()
             }
-
+            
             val lat = location.latitude
             val lon = location.longitude
 

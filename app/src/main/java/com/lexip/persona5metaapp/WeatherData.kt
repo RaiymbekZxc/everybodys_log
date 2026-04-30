@@ -1,5 +1,7 @@
 package com.lexip.persona5metaapp
 
+import com.google.gson.annotations.SerializedName
+
 data class WeatherResponse(
     val current: CurrentWeather?
 )
