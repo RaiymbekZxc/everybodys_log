@@ -13,7 +13,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-
 @app.get('/')
 async def root():
     return {"message": "Persona 5 Meta App API is running"}
