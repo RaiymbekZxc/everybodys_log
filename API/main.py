@@ -8,8 +8,8 @@ from fastapi.exceptions import HTTPException
 from sqlmodel import select
 
 from .database import create_db_and_tables, SessionDep
-from .models import UserInDB
-from .auth import get_current_user, verify_password
+from .models import UserInDB, UserCreate
+from .auth import get_current_user, verify_password, get_user, get_password_hash, create_user_in_db
 
 
 @asynccontextmanager
@@ -41,3 +41,16 @@ async def post_user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depend
     
     return {"access_token": "placeholder", "token_type": "bearer"}
     
+
+@app.post('/register', status_code=201)
+async def register_user(user_data: UserCreate, session: SessionDep):
+    if await get_user(session=session, username=user_data.username):
+        raise HTTPException(status_code=409, detail="Given username is already taken.")
+    
+    if await get_user(session=session, email=user_data.email):
+        raise HTTPException(status_code=409, detail="Given email is already in use.")
+    
+    user = UserInDB(**user_data.model_dump(exclude={"password"}), hashed_password=get_password_hash(user_data.password))
+    create_user_in_db(session=session, user=user)
+
+    return {"detail": "user created."}

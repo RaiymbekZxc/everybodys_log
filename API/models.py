@@ -10,6 +10,13 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str | None = None
 
+class UserCreate(BaseModel):
+    username: str
+    password: str 
+    email: str
+    name: str
+    disabled: bool | None = False
+
 class User(SQLModel):
     id: int = Field(default=None, primary_key=True)
     username: str = Field(default=None)
