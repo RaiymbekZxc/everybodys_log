@@ -18,4 +18,4 @@ class User(SQLModel):
     disabled: bool = Field(default=False)
 
 class UserInDB(User, table=True):
-    hashed_password: str = Field(default="HASHSHSHSHS")
+    hashed_password: str
