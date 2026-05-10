@@ -6,10 +6,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.exceptions import HTTPException
 
 from sqlmodel import select
+from datetime import timedelta
 
 from .database import create_db_and_tables, SessionDep
 from .models import UserInDB, UserCreate
-from .auth import get_current_user, verify_password, get_user, get_password_hash, create_user_in_db
+from .auth import get_current_user, verify_password, get_user, get_password_hash, create_user_in_db, create_access_token
 
 
 @asynccontextmanager
@@ -38,8 +39,8 @@ async def post_user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depend
         raise iuop_exception    
     if not verify_password(form_data.password, user.hashed_password):
         raise iuop_exception
-    
-    return {"access_token": "placeholder", "token_type": "bearer"}
+    access_token = create_access_token(data={"sub": user.model_dump(exclude={"hashed_password"})}, expires_delta=timedelta(days=30))
+    return {"access_token": access_token, "token_type": "bearer"}
     
 
 @app.post('/register', status_code=201)
