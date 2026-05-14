@@ -1,0 +1,72 @@
+
+
+from fastapi import APIRouter, Depends
+from fastapi.exceptions import HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+
+from sqlmodel import select
+from datetime import timedelta
+from typing import Annotated
+
+from ..auth import (tblUser, authenticate_user, verify_password, create_access_token, get_user, 
+                    get_current_user, get_password_hash,create_user_in_db, oauth2_scheme
+                    ,blacklisted_tokens, SECRET_KEY)
+from ..models import Token, UserCreate, UserUpdate, UpdateType
+from ..database import SessionDep
+
+router_auth = APIRouter(prefix="/auth")
+
+@router_auth.get('/users/me')
+async def read_users_me(current_user: Annotated[str, Depends(get_current_user)]):
+    return current_user
+
+@router_auth.post('/token')
+async def user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], session: SessionDep) -> Token:
+    user = await authenticate_user(session=session, username=form_data.username, password=form_data.password)
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username or password.")
+
+    access_token = create_access_token(data={"sub": user.UserId}, expires_delta=timedelta(days=30))
+    print(SECRET_KEY)
+    return Token(access_token=access_token, token_type="bearer")
+
+@router_auth.post('/register', status_code=201)
+async def register_user(user_data: UserCreate, session: SessionDep):
+    if await get_user(session=session, username=user_data.Username):
+        raise HTTPException(status_code=409, detail="Given username is already taken.")
+    
+    if await get_user(session=session, email=user_data.Email):
+        raise HTTPException(status_code=409, detail="Given email is already in use.")
+    
+    user = tblUser(**user_data.model_dump(exclude={"password"}), hashed_password=get_password_hash(user_data.Password))
+    create_user_in_db(session=session, user=user)
+
+    return {"detail": "user created."}
+
+@router_auth.post('/logout')
+async def logout_user(token: str = Depends(oauth2_scheme)):
+    blacklisted_tokens.add(token)
+    return {"detail": "logged out."}
+
+@router_auth.put('/users/me')
+async def update_user(session: SessionDep, user_info: UserUpdate, token: str = Depends(oauth2_scheme)):
+    current_user = await get_current_user(token=token, session=session)
+    match user_info.TypeOfInteraction:
+        case UpdateType.password:
+            print(token)
+            if not verify_password(user_info.Password, current_user.hashed_password): 
+                raise HTTPException(status_code=401, detail="Incorrect password.")
+            
+            current_user.hashed_password = get_password_hash(user_info.NewPassword)
+            create_user_in_db(user=current_user, session=session)
+        case UpdateType.username:
+
+            if not user_info.Username:
+                raise HTTPException(status_code=422, detail="No username provided.")
+            statement = select(tblUser).where(user_info.Username==tblUser.Username)
+
+            if session.exec(statement=statement).first():
+                raise HTTPException(status_code=409, detail="Username already taken.")
+            current_user.Username = user_info.Username
+            create_user_in_db(user=current_user, session=session)
+
