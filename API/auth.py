@@ -34,7 +34,7 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return password_hash.hash(password)
 
-async def get_user(session: SessionDep, id: int | None = None, username: str | None = None, email: str | None = None) -> tblUser | None:
+def get_user(session: SessionDep, id: int | None = None, username: str | None = None, email: str | None = None) -> tblUser | None:
     if not username and not id and not email: 
         raise ValueError("Arguments must have ID, Username or Email.")
     if id: 
@@ -47,7 +47,7 @@ async def get_user(session: SessionDep, id: int | None = None, username: str | N
         return statement.first()
 
 async def authenticate_user(session: SessionDep, username: str, password: str):
-    user = await get_user(session=session, username=username)
+    user = get_user(session=session, username=username)
     if not user:
         verify_password(password, DUMMY_HASH)
         return False
@@ -61,20 +61,20 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
         detail="Couldn't authenticate the user.",
         headers={"WWW-Authenticate": "Bearer"})
     print(token)
+    
     if token in blacklisted_tokens:
         raise credentials_exception
 
     try: 
-        print(SECRET_KEY) 
-        payload = jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
-        print("herereerer")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print(token)
         user_id = payload.get("sub")
         if not user_id:
             raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
     
-    user = await get_user(session=session,id=user_id)
+    user = get_user(session=session,id=user_id)
     if user is None:
         raise credentials_exception
     return user
