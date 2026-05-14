@@ -26,16 +26,16 @@ async def user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password.")
 
-    access_token = create_access_token(data={"sub": user.UserId}, expires_delta=timedelta(days=30))
+    access_token = create_access_token(data={"sub": str(user.UserId)}, expires_delta=timedelta(days=30))
     print(SECRET_KEY)
     return Token(access_token=access_token, token_type="bearer")
 
 @router_auth.post('/register', status_code=201)
 async def register_user(user_data: UserCreate, session: SessionDep):
-    if await get_user(session=session, username=user_data.Username):
+    if get_user(session=session, username=user_data.Username):
         raise HTTPException(status_code=409, detail="Given username is already taken.")
     
-    if await get_user(session=session, email=user_data.Email):
+    if get_user(session=session, email=user_data.Email):
         raise HTTPException(status_code=409, detail="Given email is already in use.")
     
     user = tblUser(**user_data.model_dump(exclude={"password"}), hashed_password=get_password_hash(user_data.Password))
