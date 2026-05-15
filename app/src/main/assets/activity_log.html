@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persona Button</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <a class="link-wrapper" href="#">
+
+        <span class="fallback">Button</span>
+
+        <div class="img-wrapper">
+            <img class="normal"
+                 src="https://i.imgur.com/H4JD35M.png">
+
+            <img class="active"
+                 src="https://i.imgur.com/ELytdKg.png">
+        </div>
+
+        <div class="shape-wrapper">
+
+            <div class="shape red-fill jelly">
+                <svg viewBox="0 0 108.1 47">
+                    <polygon
+                            fill="#FF0000"
+                            points="29.5,8.5 150.7,0 108.1,32.7 3.1,47"/>
+                </svg>
+            </div>
+
+            <div class="shape cyan-fill jelly">
+                <svg viewBox="0 0 108.1 47">
+                    <polygon
+                            fill="#00FFFF"
+                            points="0.3,17 125.1,0 68.8,45.6 24.3,39"/>
+                </svg>
+            </div>
+
+        </div>
+
+    </a>
+
+</div>
+<script>
+    // Находим все кнопки-ссылки
+    const buttons = document.querySelectorAll('.link-wrapper');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // Чтобы страница не перезагружалась при нажатии на ссылку #
+            this.classList.add('is-permanent'); // Добавляем класс навсегда
+        });
+    });
+</script>
+</body>
+</html>

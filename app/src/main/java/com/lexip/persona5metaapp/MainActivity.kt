@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToDateConfigActivity(v: View) {
-        val intent = Intent(this, PersonaDateConfig::class.java)
+        val intent = Intent(this, ActivityLogConfig::class.java)
         startActivity(intent)
     }
 }
