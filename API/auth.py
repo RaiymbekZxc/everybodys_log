@@ -5,28 +5,28 @@ from dotenv import load_dotenv
 
 import os
 
-from jwt import PyJWTError, encode, decode
+import jwt 
 from jwt.exceptions import InvalidTokenError 
 
 from fastapi import Depends
 from fastapi.exceptions import HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 
 from pwdlib import PasswordHash
 from sqlmodel import select
 
 from .database import SessionDep
-from .models import User, UserInDB, Token, TokenData, UserCreate
+from .models import tblUser
 
 load_dotenv()
 
 password_hash = PasswordHash.recommended()
-DUMMY_HASH = password_hash.hash("dummypassword")
+blacklisted_tokens = set()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
+DUMMY_HASH = password_hash.hash("dummypassword")
 SECRET_KEY = os.getenv("SECRET_KEY", DUMMY_HASH)
 ALGORITHM = os.getenv("ALGORITHM", "HS256") 
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def verify_password(plain_password, hashed_password):
     return password_hash.verify(plain_password, hashed_password)
@@ -34,20 +34,20 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return password_hash.hash(password)
 
-async def get_user(session: SessionDep, id: int | None = None, username: str | None = None, email: str | None = None) -> UserInDB | None:
+def get_user(session: SessionDep, id: int | None = None, username: str | None = None, email: str | None = None) -> tblUser | None:
     if not username and not id and not email: 
         raise ValueError("Arguments must have ID, Username or Email.")
     if id: 
-        return session.get(UserInDB, id)
+        return session.get(tblUser, id)
     if username:
-        statement = session.exec(select(UserInDB).where(UserInDB.username==username))
+        statement = session.exec(select(tblUser).where(tblUser.Username==username))
         return statement.first()
     if email:
-        statement = session.exec(select(UserInDB).where(UserInDB.email==email))
+        statement = session.exec(select(tblUser).where(tblUser.Email==email))
         return statement.first()
 
 async def authenticate_user(session: SessionDep, username: str, password: str):
-    user = await get_user(session=session, username=username)
+    user = get_user(session=session, username=username)
     if not user:
         verify_password(password, DUMMY_HASH)
         return False
@@ -60,19 +60,27 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
         status_code=401,
         detail="Couldn't authenticate the user.",
         headers={"WWW-Authenticate": "Bearer"})
+    
+    if token in blacklisted_tokens:
+        raise credentials_exception
+
     try: 
-        payload = decode(token, SECRET_KEY, ALGORITHM)
-        username = payload.get("sub")
-        if not username:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        if not user_id:
             raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
     
-    user = await get_user(session=session,username=username)
+    user = get_user(session=session,id=user_id)
     if user is None:
         raise credentials_exception
     return user
 
+async def is_admin(user: tblUser=Depends(get_current_user)):
+    if user.IsAdmin != True:
+        raise HTTPException(status_code=403, detail="Admins only")
+    return user
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -82,10 +90,27 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expiration = datetime.now(timezone.utc) + timedelta(minutes=15)
     
     to_encode.update({"exp": expiration})
-    encoded_jwt = encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
     return encoded_jwt
 
-def create_user_in_db(session: SessionDep, user: UserInDB):
+def get_user_or_404(username: str, session: SessionDep):
+    user = get_user(username=username, session=session)
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    
+    return user
+
+def not_me_or_400(user: tblUser, me: tblUser) -> bool:
+    if user.UserId == me.UserId: 
+        raise HTTPException(400, detail="Cannot perform this action on yourself.")
+    return True
+
+def delete_user(session: SessionDep, user: tblUser):
+    session.delete(user)
+    session.commit()
+
+def save_user(session: SessionDep, user: tblUser):
     session.add(user)
     session.commit()
