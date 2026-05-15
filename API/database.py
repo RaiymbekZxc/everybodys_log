@@ -14,6 +14,8 @@ HOST = os.getenv("host")
 PORT = os.getenv("port")
 DBNAME = os.getenv("dbname")
 
+SUPERKEY = os.getenv("SUPERKEY")
+
 DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
