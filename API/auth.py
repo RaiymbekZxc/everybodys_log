@@ -60,14 +60,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
         status_code=401,
         detail="Couldn't authenticate the user.",
         headers={"WWW-Authenticate": "Bearer"})
-    print(token)
     
     if token in blacklisted_tokens:
         raise credentials_exception
 
     try: 
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        print(token)
         user_id = payload.get("sub")
         if not user_id:
             raise credentials_exception
@@ -79,6 +77,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
         raise credentials_exception
     return user
 
+async def is_admin(user: tblUser=Depends(get_current_user)):
+    if user.IsAdmin != True:
+        raise HTTPException(status_code=403, detail="Admins only")
+    return user
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -92,6 +94,23 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     
     return encoded_jwt
 
-def create_user_in_db(session: SessionDep, user: tblUser):
+def get_user_or_404(username: str, session: SessionDep):
+    user = get_user(username=username, session=session)
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    
+    return user
+
+def not_me_or_400(user: tblUser, me: tblUser) -> bool:
+    if user.UserId == me.UserId: 
+        raise HTTPException(400, detail="Cannot perform this action on yourself.")
+    return True
+
+def delete_user(session: SessionDep, user: tblUser):
+    session.delete(user)
+    session.commit()
+
+def save_user(session: SessionDep, user: tblUser):
     session.add(user)
     session.commit()

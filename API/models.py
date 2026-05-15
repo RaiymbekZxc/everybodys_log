@@ -37,6 +37,9 @@ class User(SQLModel):
 class tblUser(User, table=True):
     hashed_password: str
 
+class userOut(User):
+    pass
+
 class tblCategory(SQLModel, table=True):
     CategoryId: int = Field(default=None, primary_key=True)
     Name: str = Field(default=None, unique=True)

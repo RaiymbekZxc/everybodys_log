@@ -9,14 +9,13 @@ from datetime import timedelta
 from typing import Annotated
 
 from ..auth import (tblUser, authenticate_user, verify_password, create_access_token, get_user, 
-                    get_current_user, get_password_hash,create_user_in_db, oauth2_scheme
-                    ,blacklisted_tokens, SECRET_KEY)
-from ..models import Token, UserCreate, UserUpdate, UpdateType
+                    get_current_user, get_password_hash,save_user, oauth2_scheme ,blacklisted_tokens)
+from ..models import Token, UserCreate, UserUpdate, UpdateType, userOut
 from ..database import SessionDep
 
 router_auth = APIRouter(prefix="/auth")
 
-@router_auth.get('/users/me')
+@router_auth.get('/users/me', response_model=userOut)
 async def read_users_me(current_user: Annotated[str, Depends(get_current_user)]):
     return current_user
 
@@ -27,7 +26,6 @@ async def user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         raise HTTPException(status_code=400, detail="Incorrect username or password.")
 
     access_token = create_access_token(data={"sub": str(user.UserId)}, expires_delta=timedelta(days=30))
-    print(SECRET_KEY)
     return Token(access_token=access_token, token_type="bearer")
 
 @router_auth.post('/register', status_code=201)
@@ -39,7 +37,7 @@ async def register_user(user_data: UserCreate, session: SessionDep):
         raise HTTPException(status_code=409, detail="Given email is already in use.")
     
     user = tblUser(**user_data.model_dump(exclude={"password"}), hashed_password=get_password_hash(user_data.Password))
-    create_user_in_db(session=session, user=user)
+    save_user(session=session, user=user)
 
     return {"detail": "user created."}
 
@@ -53,12 +51,14 @@ async def update_user(session: SessionDep, user_info: UserUpdate, token: str = D
     current_user = await get_current_user(token=token, session=session)
     match user_info.TypeOfInteraction:
         case UpdateType.password:
-            print(token)
             if not verify_password(user_info.Password, current_user.hashed_password): 
                 raise HTTPException(status_code=401, detail="Incorrect password.")
             
             current_user.hashed_password = get_password_hash(user_info.NewPassword)
-            create_user_in_db(user=current_user, session=session)
+            
+            save_user(user=current_user, session=session)
+            
+            return {"detail": "Password has been successfuly updated."}
         case UpdateType.username:
 
             if not user_info.Username:
@@ -67,6 +67,9 @@ async def update_user(session: SessionDep, user_info: UserUpdate, token: str = D
 
             if session.exec(statement=statement).first():
                 raise HTTPException(status_code=409, detail="Username already taken.")
+            
             current_user.Username = user_info.Username
-            create_user_in_db(user=current_user, session=session)
-
+            
+            save_user(user=current_user, session=session)
+            
+            return {"detail": "Username has been successfuly updated."}

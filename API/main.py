@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from .routers.authentication import router_auth
 from .routers.health import router_health
+from .routers.admin import router_admin
 from .database import create_db_and_tables
 
 @asynccontextmanager
@@ -15,3 +16,4 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(prefix="/api", router=router_health)
 app.include_router(prefix="/api", router=router_auth)
+app.include_router(prefix="/api", router=router_admin)
