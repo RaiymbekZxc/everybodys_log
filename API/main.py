@@ -3,9 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers.authentication import router_auth
-from .routers.health import router_health
-from .routers.admin import router_admin
+
+from .routers import health, authentication, admin
 from .database import create_db_and_tables
 
 @asynccontextmanager
@@ -24,6 +23,6 @@ app.add_middleware(
 )
 
 
-app.include_router(prefix="/api", router=router_health)
-app.include_router(prefix="/api", router=router_auth)
-app.include_router(prefix="/api", router=router_admin)
+app.include_router(prefix="/api", router=health.router)
+app.include_router(prefix="/api", router=authentication.router)
+app.include_router(prefix="/api", router=admin.router)

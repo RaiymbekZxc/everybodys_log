@@ -6,9 +6,9 @@ from ..auth import is_admin, get_user, save_user, delete_user, get_user_or_404, 
 from ..database import SessionDep
 from ..models import tblUser
 
-router_admin = APIRouter(prefix="/admin", dependencies=[Depends(is_admin)])
+router = APIRouter(prefix="/admin", dependencies=[Depends(is_admin)])
 
-@router_admin.put('/user/{username}/deactivate')
+@router.put('/user/{username}/deactivate')
 def user_deactivate(username: str, session: SessionDep, me: tblUser = Depends(get_user)):
     
     user = get_user_or_404(username=username, session=session)
@@ -19,7 +19,7 @@ def user_deactivate(username: str, session: SessionDep, me: tblUser = Depends(ge
 
     return {"detail": f"{user.Username} is deactivated."}
 
-@router_admin.delete('/user/{username}/delete')
+@router.delete('/user/{username}/delete')
 def user_delete(username: str, session: SessionDep, me: tblUser = Depends(get_user)):
 
     user = get_user_or_404(username=username, session=session)

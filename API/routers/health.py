@@ -3,13 +3,13 @@ from fastapi import APIRouter
 
 from ..database import SessionDep
 
-router_health = APIRouter(prefix="/health")
+router = APIRouter(prefix="/health")
 
-@router_health.get("/")
+@router.get("/")
 async def health():
     return {"status": "ok"}
 
-@router_health.get("/database")
+@router.get("/database")
 async def database(session: SessionDep):
     try:
         from sqlmodel import select

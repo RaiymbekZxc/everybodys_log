@@ -13,13 +13,13 @@ from ..auth import (tblUser, authenticate_user, verify_password, create_access_t
 from ..models import Token, UserCreate, UserUpdate, UpdateType, userOut
 from ..database import SessionDep
 
-router_auth = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth")
 
-@router_auth.get('/users/me', response_model=userOut)
+@router.get('/users/me', response_model=userOut)
 async def read_users_me(current_user: Annotated[str, Depends(get_current_user)]):
     return current_user
 
-@router_auth.post('/token')
+@router.post('/token')
 async def user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], session: SessionDep) -> Token:
     user = await authenticate_user(session=session, username=form_data.username, password=form_data.password)
     if not user:
@@ -28,7 +28,7 @@ async def user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     access_token = create_access_token(data={"sub": str(user.UserId)}, expires_delta=timedelta(days=30))
     return Token(access_token=access_token, token_type="bearer")
 
-@router_auth.post('/register', status_code=201)
+@router.post('/register', status_code=201)
 async def register_user(user_data: UserCreate, session: SessionDep):
     if get_user(session=session, username=user_data.Username):
         raise HTTPException(status_code=409, detail="Given username is already taken.")
@@ -41,12 +41,12 @@ async def register_user(user_data: UserCreate, session: SessionDep):
 
     return {"detail": "user created."}
 
-@router_auth.post('/logout')
+@router.post('/logout')
 async def logout_user(token: str = Depends(oauth2_scheme)):
     blacklisted_tokens.add(token)
     return {"detail": "logged out."}
 
-@router_auth.put('/users/me')
+@router.put('/users/me')
 async def update_user(session: SessionDep, user_info: UserUpdate, token: str = Depends(oauth2_scheme)):
     current_user = await get_current_user(token=token, session=session)
     match user_info.TypeOfInteraction:

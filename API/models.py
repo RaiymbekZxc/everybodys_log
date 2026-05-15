@@ -1,5 +1,4 @@
 
-
 from sqlmodel import SQLModel, Field
 from pydantic import BaseModel 
 from datetime import datetime, timezone
@@ -26,16 +25,17 @@ class UserCreate(BaseModel):
     Email: str
     IsActive: bool | None = True
 
+
 class User(SQLModel):
     UserId: int = Field(primary_key=True)
     Username: str = Field(default=None, unique=True)
     Email: str = Field(default=None, unique=True)
     IsActive: bool = Field(default=True)
     IsAdmin: bool = Field(default=False)
-    DateRegistered: datetime = Field(default_factory=lambda: datetime.now(tz=timezone.utc))
 
 class tblUser(User, table=True):
     hashed_password: str
+    DateRegistered: datetime = Field(default_factory=lambda: datetime.now(tz=timezone.utc))
 
 class userOut(User):
     pass
