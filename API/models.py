@@ -24,7 +24,7 @@ class UserCreate(BaseModel):
     Username: str
     Password: str 
     Email: str
-    IsActive: bool | None = False
+    IsActive: bool | None = True
 
 class User(SQLModel):
     UserId: int = Field(primary_key=True)
