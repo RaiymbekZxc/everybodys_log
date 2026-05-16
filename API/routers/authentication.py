@@ -9,7 +9,7 @@ from datetime import timedelta
 from typing import Annotated
 
 from ..auth import (tblUser, authenticate_user, verify_password, create_access_token, get_user, 
-                    get_current_user, get_password_hash,save_user, oauth2_scheme ,blacklisted_tokens)
+                    get_current_user, get_password_hash,database_save, oauth2_scheme ,blacklisted_tokens)
 from ..models import Token, UserCreate, UserUpdate, UpdateType, userOut
 from ..database import SessionDep
 
@@ -37,7 +37,7 @@ async def register_user(user_data: UserCreate, session: SessionDep):
         raise HTTPException(status_code=409, detail="Given email is already in use.")
     
     user = tblUser(**user_data.model_dump(exclude={"password"}), hashed_password=get_password_hash(user_data.Password))
-    save_user(session=session, user=user)
+    database_save(session=session, dbinstance=user)
 
     return {"detail": "user created."}
 
@@ -56,7 +56,7 @@ async def update_user(session: SessionDep, user_info: UserUpdate, token: str = D
             
             current_user.hashed_password = get_password_hash(user_info.NewPassword)
             
-            save_user(user=current_user, session=session)
+            database_save(dbinstance=current_user, session=session)
             
             return {"detail": "Password has been successfuly updated."}
         case UpdateType.username:
@@ -70,6 +70,6 @@ async def update_user(session: SessionDep, user_info: UserUpdate, token: str = D
             
             current_user.Username = user_info.Username
             
-            save_user(user=current_user, session=session)
+            database_save(dbinstance=current_user, session=session)
             
             return {"detail": "Username has been successfuly updated."}

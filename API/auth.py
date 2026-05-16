@@ -107,10 +107,10 @@ def not_me_or_400(user: tblUser, me: tblUser) -> bool:
         raise HTTPException(400, detail="Cannot perform this action on yourself.")
     return True
 
-def delete_user(session: SessionDep, user: tblUser):
+def database_delete(session: SessionDep, user: tblUser):
     session.delete(user)
     session.commit()
 
-def save_user(session: SessionDep, user: tblUser):
-    session.add(user)
+def database_save(session: SessionDep, dbinstance):
+    session.add(dbinstance)
     session.commit()

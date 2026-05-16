@@ -12,6 +12,21 @@ class UpdateType(Enum):
     password = "password"
     username = "username"
 
+class CategoryType(Enum):
+    productivity = "productivity"
+    leisure = "leisure"
+    social_life = "social-life"
+
+class ActivityScore(BaseModel):
+    count: int | None = None
+    percentage: int | None = None
+
+class ActivityInfo(BaseModel):
+    timestamp: str | None = None
+    productivity: ActivityScore = ActivityScore()
+    leisure: ActivityScore = ActivityScore()
+    social_life: ActivityScore = ActivityScore()
+
 class UserUpdate(BaseModel):
     TypeOfInteraction: UpdateType
     Username: str | None = None
@@ -47,6 +62,7 @@ class tblCategory(SQLModel, table=True):
     CategoryId: int = Field(default=None, primary_key=True)
     Name: str = Field(default=None, unique=True)
     Description: str = Field(default="No description.")
+    PeopleClicked: int = Field(default=0)
 
 class tblActivity(SQLModel, table=True):
     ActivityId: int = Field(primary_key=True)
