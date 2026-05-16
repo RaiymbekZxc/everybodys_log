@@ -18,6 +18,6 @@ class ActivityLogConfig : AppCompatActivity() {
             loadWithOverviewMode = true
             useWideViewPort = true
         }
-        webView.loadUrl("file:///android_asset/frontend/views/login.html")
+        webView.loadUrl("file:///android_asset/frontend/views/register.html")
     }
 }
