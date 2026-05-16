@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta charset="utf-8">
+    <title>Profile</title>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .card { border: 1px solid #ccc; border-radius: 12px; padding: 16px; max-width: 420px; }
+        .row { margin: 10px 0; }
+        .label { font-weight: bold; }
+        button { margin-top: 14px; padding: 10px 16px; cursor: pointer; }
+        #status { margin-top: 12px; }
+    </style>
+</head>
+<body>
+
+<h2>User Profile</h2>
+
+<div class="card">
+    <div class="row"><span class="label">User ID:</span> <span id="UserId">Loading...</span></div>
+    <div class="row"><span class="label">Username:</span> <span id="Username">Loading...</span></div>
+    <div class="row"><span class="label">Email:</span> <span id="Email">Loading...</span></div>
+    <div class="row"><span class="label">Is Active:</span> <span id="IsActive">Loading...</span></div>
+    <div class="row"><span class="label">Is Admin:</span> <span id="IsAdmin">Loading...</span></div>
+
+    <button onclick="logout()">Logout</button>
+</div>
+
+<p id="status"></p>
+
+<script>
+    async function loadProfile() {
+      const status = document.getElementById("status");
+
+      if (!getToken()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        const user = await apiFetch("/api/auth/users/me");
+
+        document.getElementById("UserId").textContent = user.UserId;
+        document.getElementById("Username").textContent = user.Username;
+        document.getElementById("Email").textContent = user.Email;
+        document.getElementById("IsActive").textContent = user.IsActive;
+        document.getElementById("IsAdmin").textContent = user.IsAdmin;
+
+        status.textContent = "";
+      } catch (e) {
+        clearToken();
+        status.textContent = "Session expired. Redirecting to login...";
+        setTimeout(() => window.location.href = "login.html", 800);
+      }
+    }
+
+    async function logout() {
+      try {
+        await apiFetch("/api/auth/logout", { method: "POST" });
+      } catch (_) {
+      }
+      clearToken();
+      window.location.href = "login.html";
+    }
+
+    window.onload = loadProfile;
+</script>
+
+</body>
+</html>

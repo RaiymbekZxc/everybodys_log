@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Login</title>
+    <title>Register</title>
+
     <link rel="stylesheet" href="../styles/style.css">
+
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
 </head>
 <body>
 
@@ -64,7 +68,120 @@
 
 </div>
 
-<script src=""></script>
+<script>
+    const form = document.getElementById("registerForm");
+    const errorBox = document.getElementById("error");
+    const successBox = document.getElementById("success");
+
+    function showError(msg) {
+        errorBox.textContent = msg;
+        successBox.textContent = "";
+    }
+
+    function showSuccess(msg) {
+        successBox.textContent = msg;
+        errorBox.textContent = "";
+    }
+
+    async function tryReadError(response) {
+        try {
+            const ct = response.headers.get("content-type") || "";
+            if (ct.includes("application/json")) {
+                const j = await response.json();
+                if (typeof j.detail === "string") return j.detail;
+                return JSON.stringify(j);
+            }
+            return await response.text();
+        } catch {
+            return "Unknown error";
+        }
+    }
+
+    async function createUser(username, email, password) {
+
+    const payload = {
+        Username: username,
+        Password: password,
+        Email: email,
+        IsActive: true
+    };
+
+    const res = await fetch(
+        window.API_BASE + "/api/auth/register",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(
+            data.detail || JSON.stringify(data)
+        );
+    }
+
+    return data;
+}
+
+    async function login(username, password) {
+        const body = new URLSearchParams();
+        body.append("username", username);
+        body.append("password", password);
+
+        const res = await fetch(window.API_BASE + "/api/auth/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.detail || JSON.stringify(data));
+        }
+
+        setToken(data.access_token);
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const username = document.getElementById("login").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const confirm = document.getElementById("confirmPassword").value;
+
+        if (password !== confirm) {
+            showError("Passwords do not match.");
+            return;
+        }
+
+        if (password.length < 6) {
+            showError("Password should be at least 6 characters.");
+            return;
+        }
+
+        try {
+            showSuccess("Creating account...");
+
+            await createUser(username, email, password);
+
+            showSuccess("Account created! Logging you in...");
+
+            await login(username, password);
+
+            window.location.href = "profile.html";
+
+        } catch (e) {
+            console.error(e);
+            showError(e.message || "Registration failed.");
+        }
+    });
+</script>
 
 </body>
 </html>

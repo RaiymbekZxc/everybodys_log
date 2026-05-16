@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Persona5MetaApp">
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".PersonaDateConfig"
             android:exported="false" />
@@ -33,7 +36,6 @@
             android:name=".ActivityLogConfig"
             android:exported="false" />
 
-
         <receiver
             android:name=".PersonaDateWidgetProvider"
             android:exported="false">
@@ -48,7 +50,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/persona_date_widget_info" />
         </receiver>
-
         <receiver
             android:name=".ActivityLogWidgetProvider"
             android:exported="false">
@@ -60,7 +61,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/activity_log_widget_info" />
         </receiver>
-
     </application>
 
 </manifest>

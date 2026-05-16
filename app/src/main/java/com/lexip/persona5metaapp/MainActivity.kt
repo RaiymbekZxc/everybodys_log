@@ -67,4 +67,8 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, ActivityLogConfig::class.java)
         startActivity(intent)
     }
+    fun openProfilePage(view: View) {
+        val intent = Intent(this, ProfileActivity::class.java)
+        startActivity(intent)
+    }
 }
