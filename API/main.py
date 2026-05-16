@@ -26,3 +26,4 @@ app.add_middleware(
 app.include_router(prefix="/api", router=health.router)
 app.include_router(prefix="/api", router=authentication.router)
 app.include_router(prefix="/api", router=admin.router)
+app.include_router(prefix="/api", router=admin.router_secret)

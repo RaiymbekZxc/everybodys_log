@@ -5,6 +5,9 @@ from datetime import datetime, timezone
 from enum import Enum
 
 
+class Super(BaseModel):
+    superkey: str
+
 class UpdateType(Enum):
     password = "password"
     username = "username"
