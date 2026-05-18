@@ -1,5 +1,6 @@
 
 from fastapi import APIRouter
+from fastapi.exceptions import HTTPException
 
 from ..database import SessionDep
 
@@ -14,8 +15,7 @@ async def database(session: SessionDep):
     try:
         from sqlmodel import select
         session.exec(select(1))
-        db_status = "ok"
     except Exception: 
-        db_status = "unavailable"
+        raise HTTPException(500, detail="Database is not available.")
 
-    return {"database": db_status}
+    return {"database": "ok"}
