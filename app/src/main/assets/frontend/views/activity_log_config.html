@@ -18,8 +18,8 @@
         <a class="link-wrapper option-btn" href="#" data-category="productivity">
             <span class="fallback">Productivity</span>
             <div class="img-wrapper">
-                <img class="normal" src="https://i.imgur.com/H4JD35M.png">
-                <img class="active" src="https://i.imgur.com/ELytdKg.png">
+                <img class="normal" src="../../images/productivity_normal.png">
+                <img class="active" src="../../images/productivity_active.png">
             </div>
             <div class="shape-wrapper">
                 <div class="shape red-fill jelly">
@@ -34,8 +34,8 @@
         <a class="link-wrapper option-btn" href="#" data-category="social-life">
             <span class="fallback">Social Life</span>
             <div class="img-wrapper">
-                <img class="normal" src="https://i.imgur.com/H4JD35M.png">
-                <img class="active" src="https://i.imgur.com/ELytdKg.png">
+                <img class="normal" src="../../images/social_life_normal.png">
+                <img class="active" src="../../images/social_life_active.png">
             </div>
             <div class="shape-wrapper">
                 <div class="shape red-fill jelly">
@@ -50,8 +50,8 @@
         <a class="link-wrapper option-btn" href="#" data-category="leisure">
             <span class="fallback">Leisure</span>
             <div class="img-wrapper">
-                <img class="normal" src="https://i.imgur.com/H4JD35M.png">
-                <img class="active" src="https://i.imgur.com/ELytdKg.png">
+                <img class="normal" src="../../images/leisure_normal.png">
+                <img class="active" src="../../images/leisure_active.png">
             </div>
             <div class="shape-wrapper">
                 <div class="shape red-fill jelly">
@@ -113,12 +113,34 @@
           return;
       }
 
+      // сброс в 00 06 12 18 часов
+      // индексы. 0: 00-06, 1: 06-12, 2: 12-18, 3: 18-00
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      const windowIndex = Math.floor(currentHour / 6);
+      const windowId = `${now.toDateString()}_${windowIndex}`;
+
+      if (localStorage.getItem("last_set_window") == windowId){
+        let nextReset = "";
+        if (windowIndex === 0) nextReset = "06:00";
+        else if (windowIndex === 1) nextReset = "12:00";
+        else if (windowIndex === 2) nextReset = "18:00";
+        else nextReset = "00:00";
+
+        alert(`You've already sent data for this timestamp. Next slot opens at ${nextReset}.`);
+        console.log("уже отправлял");
+        return;
+      }
+
       const categoryValue = activeBtn.getAttribute("data-category");
 
       try{
         const response = await apiFetch(`/api/activity/${categoryValue}`,{
             method: "POST"
         });
+
+        localStorage.setItem("last_set_window", windowId);
 
         console.log("Server response:", response);
         alert("Data sent!")
