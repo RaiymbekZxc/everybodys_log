@@ -24,11 +24,13 @@ def session_fixture():
         session.commit()
         yield session
 
-def make_user(user_id: int = 1, username: str = "user"):
+def make_user(user_id: int = 1, username: str = "user", admin: bool = False):
     return tblUser(
         UserId=user_id,
         Username=username,
-        hashed_password="fake_hash"
+        hashed_password="fake_hash",
+        IsAdmin=False,
+        IsActive=True
     )
 
 @pytest.fixture
