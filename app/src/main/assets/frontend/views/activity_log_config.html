@@ -123,10 +123,10 @@
 
       if (localStorage.getItem("last_set_window") == windowId){
         let nextReset = "";
-        if (windowIndex === 0) nextReset = "06:00";
+        if (windowIndex === 0) nextReset = "08:00";
         else if (windowIndex === 1) nextReset = "12:00";
-        else if (windowIndex === 2) nextReset = "18:00";
-        else nextReset = "00:00";
+        else if (windowIndex === 2) nextReset = "17:00";
+        else nextReset = "21:00";
 
         alert(`You've already sent data for this timestamp. Next slot opens at ${nextReset}.`);
         console.log("уже отправлял");
