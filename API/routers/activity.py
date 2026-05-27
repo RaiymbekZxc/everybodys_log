@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 
-from ..timpestampupdater import get_current_period
+from ..timestampupdater import get_current_period
 from ..auth import get_current_user, database_save
 from ..models import tblUser, CategoryType, tblCategory, ActivityInfo
 from ..database import SessionDep
@@ -10,7 +10,7 @@ from ..database import SessionDep
 router = APIRouter(prefix="/activity", dependencies=[Depends(get_current_user)])
 
 @router.get("/info")
-def act_persentages(session: SessionDep) -> ActivityInfo:
+async def act_persentages(session: SessionDep) -> ActivityInfo:
     response = ActivityInfo()
     response.timestamp = get_current_period()
     overall = 0
@@ -36,8 +36,7 @@ def act_persentages(session: SessionDep) -> ActivityInfo:
     return response
 
 @router.post("/{category}")
-def select_category(category: CategoryType, session: SessionDep, user: tblUser = Depends(get_current_user)):
-    print(tblCategory, category.value)
+async def select_category(category: CategoryType, session: SessionDep, user: tblUser = Depends(get_current_user)):
     cat = session.exec(select(tblCategory).where(tblCategory.Name==category.value)).first()
     
     if not cat:
