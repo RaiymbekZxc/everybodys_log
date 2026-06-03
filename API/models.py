@@ -1,9 +1,11 @@
 
 from sqlmodel import SQLModel, Field
 from pydantic import BaseModel 
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
+import pytz 
 
+Almaty = pytz.timezone("Asia/Almaty")
 
 class Super(BaseModel):
     superkey: str
@@ -16,6 +18,11 @@ class CategoryType(Enum):
     productivity = "productivity"
     leisure = "leisure"
     social_life = "social-life"
+
+categories = {
+        CategoryType.productivity: 1,
+        CategoryType.social_life: 2,
+        CategoryType.leisure: 3}
 
 class ActivityScore(BaseModel):
     count: int | None = None
@@ -43,7 +50,6 @@ class UserCreate(BaseModel):
     Email: str
     IsActive: bool | None = True
 
-
 class User(SQLModel):
     UserId: int = Field(primary_key=True)
     Username: str = Field(default=None, unique=True)
@@ -53,7 +59,7 @@ class User(SQLModel):
 
 class tblUser(User, table=True):
     hashed_password: str
-    DateRegistered: datetime = Field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    DateRegistered: datetime = Field(default_factory=lambda: datetime.now(tz=Almaty))
 
 class userOut(User):
     pass
@@ -69,4 +75,14 @@ class tblActivity(SQLModel, table=True):
     UserId: int = Field(default = None, foreign_key="tbluser.UserId")
     CategoryId: int = Field(default = None, foreign_key="tblcategory.CategoryId")
     Description: str = Field(default="No description.")
-    DateLogged: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    DateLogged: datetime = Field(default_factory=lambda: datetime.now(Almaty))
+
+class tblUsersText(SQLModel, table=True):
+    PostId: int | None = Field(default= None, primary_key=True)
+    Text: str = Field(default=None)
+    Activity: int = Field(foreign_key="tblcategory.CategoryId")
+    DateLogged: datetime = Field(default_factory=lambda: datetime.now(Almaty))
+    Author: int = Field(foreign_key="tbluser.UserId")
+
+class UsersTextOut(tblUsersText): 
+    pass 

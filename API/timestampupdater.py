@@ -7,12 +7,11 @@ from sqlmodel import select
 from datetime import datetime
 import pytz
 
-from .models import tblCategory
+from .models import tblCategory, Almaty
 from .database import Session, engine
 from .auth import database_save
 
 scheduler = AsyncIOScheduler()
-Almaty = pytz.timezone("Asia/Almaty")
 
 def get_current_period():
     time = datetime.now(Almaty)

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from .routers import health, authentication, admin, activity, debug
+from .routers import health, authentication, admin, activity, debug, posts
 from .database import create_db_and_tables
 from .timestampupdater import scheduler
 
@@ -31,3 +31,4 @@ app.include_router(prefix="/api", router=authentication.router)
 app.include_router(prefix="/api", router=admin.router)
 app.include_router(prefix="/api", router=activity.router)
 app.include_router(prefix="/api", router=debug.router)
+app.include_router(prefix="/api", router=posts.router)
