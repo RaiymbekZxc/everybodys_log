@@ -1,18 +1,16 @@
 package com.lexip.persona5metaapp
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import java.util.Calendar
+import android.webkit.WebView
+import android.webkit.JavascriptInterface
+import android.content.Context
+import android.webkit.WebViewClient
+import com.lexip.persona5metaapp.network.SessionManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,13 +22,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val webView = WebView(this)
+        setContentView(webView)
+
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            loadWithOverviewMode = true
+            useWideViewPort = true
         }
+
+        webView.webViewClient = WebViewClient()
+
+        webView.addJavascriptInterface(
+            WebAppInterface(this),
+            "AndroidInterface"
+        )
+
+        webView.loadUrl("file:///android_asset/frontend/views/main_page.html")
 
         requestLocationPermissionsIfNeeded()
     }
@@ -55,20 +65,12 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+}
 
-    override fun onResume() {
-        super.onResume()
-        val time = Calendar.getInstance()
-        val text = findViewById<TextView>(R.id.tex)
-        text.text = time.time.toString()
-    }
-
-    fun goToDateConfigActivity(v: View) {
-        val intent = Intent(this, ActivityLogConfig::class.java)
-        startActivity(intent)
-    }
-    fun openProfilePage(view: View) {
-        val intent = Intent(this, ProfileActivity::class.java)
-        startActivity(intent)
+class WebAppInterface(private val context: Context) {
+    @JavascriptInterface
+    fun saveTokenToAndroid(token: String) {
+        android.util.Log.d("PersonaWidget", "TOKEN FROM JS: $token")
+        SessionManager.saveToken(context, token)
     }
 }

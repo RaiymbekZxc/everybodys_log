@@ -7,8 +7,15 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import com.lexip.persona5metaapp.network.SessionManager
 
 class ActivityLogWidgetProvider : AppWidgetProvider() {
+
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -16,7 +23,7 @@ class ActivityLogWidgetProvider : AppWidgetProvider() {
     ) {
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
-            Log.d("PersonaWidget", "Апдейт")
+            Log.d("PersonaWidget", "Запрос обновления данных для ID: $appWidgetId")
         }
     }
 
@@ -24,40 +31,89 @@ class ActivityLogWidgetProvider : AppWidgetProvider() {
         context: Context,
         appWidgetManager: AppWidgetManager,
         appWidgetId: Int
-    ){
+    ) {
         val views = RemoteViews(context.packageName, R.layout.activity_log_widget)
 
-        val emptyIntent = Intent().apply{
+        val emptyIntent = Intent().apply {
             action = "com.lexip.persona5metaapp.EMPTY_ACTION"
         }
+
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             0,
             emptyIntent,
             PendingIntent.FLAG_IMMUTABLE
         )
+
         views.setOnClickPendingIntent(R.id.activity_log_root, pendingIntent)
 
-        // Обновление процентов
-        var productivity = 69
-        var socialLife = 68
-        var leisure = 67
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val savedToken = getSavedToken(context)
 
-        val currentProductivityPercent = "activity_log_productivity_${productivity}"
-        val productivityResId = context.resources.getIdentifier(currentProductivityPercent, "drawable",context.packageName)
+                if (savedToken.isBlank()) {
+                    Log.e(
+                        "PersonaWidget",
+                        "Token is empty. User is not logged in Android SharedPreferences."
+                    )
+                    return@launch
+                }
 
-        val currentSocialLifePercent = "activity_log_sociallife_${socialLife}"
-        val socialLifeResId = context.resources.getIdentifier(currentSocialLifePercent, "drawable",context.packageName)
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://everybodys-log.onrender.com/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
 
-        val currentLeisurePercent = "activity_log_leisure_${leisure}"
-        val leisureResId = context.resources.getIdentifier(currentLeisurePercent, "drawable",context.packageName)
+                val api = retrofit.create(ActivityApiService::class.java)
 
-        if (productivityResId != 0 && socialLifeResId != 0 && leisureResId != 0){
-            views.setImageViewResource(R.id.productivity_percent, productivityResId)
-            views.setImageViewResource(R.id.social_life_percent, socialLifeResId)
-            views.setImageViewResource(R.id.leisure_percent, leisureResId)
+                val token = "Bearer $savedToken"
+                val info = api.getActivityInfo(token)
+
+                val productivity = info.productivity.percentage ?: 0
+                val socialLife = info.socialLife.percentage ?: 0
+                val leisure = info.leisure.percentage ?: 0
+
+                val prodResId = context.resources.getIdentifier(
+                    "activity_log_productivity_$productivity",
+                    "drawable",
+                    context.packageName
+                )
+
+                val socialResId = context.resources.getIdentifier(
+                    "activity_log_sociallife_$socialLife",
+                    "drawable",
+                    context.packageName
+                )
+
+                val leisureResId = context.resources.getIdentifier(
+                    "activity_log_leisure_$leisure",
+                    "drawable",
+                    context.packageName
+                )
+
+                if (prodResId != 0) {
+                    views.setImageViewResource(R.id.productivity_percent, prodResId)
+                }
+
+                if (socialResId != 0) {
+                    views.setImageViewResource(R.id.social_life_percent, socialResId)
+                }
+
+                if (leisureResId != 0) {
+                    views.setImageViewResource(R.id.leisure_percent, leisureResId)
+                }
+
+                appWidgetManager.updateAppWidget(appWidgetId, views)
+
+                Log.d("PersonaWidget", "Виджет успешно обновлен данными из API")
+
+            } catch (e: Exception) {
+                Log.e("PersonaWidget", "Ошибка при обновлении виджета: ${e.message}")
+            }
         }
+    }
 
-        appWidgetManager.updateAppWidget(appWidgetId, views)
+    private fun getSavedToken(context: Context): String {
+        return SessionManager.getToken(context)
     }
 }

@@ -145,7 +145,14 @@
         }
 
         setToken(data.access_token);
+
+    if (window.AndroidInterface) {
+        console.log("AndroidInterface found, sending token...");
+        window.AndroidInterface.saveTokenToAndroid(data.access_token);
+    } else {
+        console.error("AndroidInterface NOT FOUND!");
     }
+}
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();

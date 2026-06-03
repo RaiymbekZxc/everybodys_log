@@ -88,6 +88,10 @@
 
             setToken(data.access_token);
 
+            if (window.AndroidInterface) {
+                window.AndroidInterface.saveTokenToAndroid(data.access_token);
+            }
+
             window.location.href = "profile.html";
 
         }
