@@ -29,8 +29,9 @@ def make_user(user_id: int = 1, username: str = "user", admin: bool = False):
         UserId=user_id,
         Username=username,
         hashed_password="fake_hash",
-        IsAdmin=False,
-        IsActive=True
+        IsAdmin=admin,
+        IsActive=True,
+        Email=f"{username}@test.com"
     )
 
 @pytest.fixture
