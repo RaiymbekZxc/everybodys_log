@@ -187,6 +187,25 @@ button[type="submit"] {
     }
 }
 
+.back-btn {
+    display: block;
+    width: 350px;
+    max-width: 90%;
+
+    margin: 25px auto 0 auto;
+
+    cursor: pointer;
+    font-family: 'p5hatty', sans-serif;
+    padding: 12px;
+    color: white;
+    background-color: black;
+    border: 2px solid red;
+    outline: 2px solid black;
+    border-radius: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
 /* ========================================================================
     activity_log.html
 ======================================================================== */
@@ -310,6 +329,23 @@ button[type="submit"] {
     background-color: white;
 
     padding: 80px 25px 25px 25px;
+    border-radius: 15px;
+    border: 2px solid black;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+.menu-container {
+  max-width: 350px;
+    margin: 0 auto;
+    text-align: center;
+
+    background-image: url('../../images/CallingCard.png');
+    background-repeat: repeat;
+    background-size: cover;
+    background-position: center;
+    background-color: white;
+
+    padding: 25px 25px 100px 25px;
     border-radius: 15px;
     border: 2px solid black;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);

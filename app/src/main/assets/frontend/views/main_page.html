@@ -3,59 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vertical Buttons</title>
-
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #f5f5f5;
-            font-family: Arial, sans-serif;
-        }
-
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .option-btn {
-            width: 250px;
-            padding: 15px;
-            text-align: center;
-            text-decoration: none;
-            color: black;
-            background: white;
-            border: 2px solid black;
-            border-radius: 10px;
-            font-size: 18px;
-            transition: 0.2s;
-        }
-
-        .option-btn:hover {
-            transform: scale(1.03);
-        }
-
-        .option-btn.active {
-            background: black;
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="../styles/style.css">
 </head>
 <body>
 
-<div class="buttons">
+<div class="menu-container">
 
-    <a href="#" class="option-btn" onclick="openPage1()">Button 1</a>
+    <div class="navbar">
 
-    <a href="#" class="option-btn" onclick="openPage2()">Button 2</a>
+        <a href="profile.html" class="send-btn">Profile</a>
 
-    <a href="#" class="option-btn" onclick="openPage3()">Button 3</a>
+        <a href="activity_log_config.html" class="send-btn">Activity Log</a>
 
-    <a href="#" class="option-btn" onclick="openPage4()">Button 4</a>
+        <a href="PAGE_3.html" class="send-btn">Button 3</a>
+
+        <a href="PAGE_4.html" class="send-btn">Button 4</a>
+
+    </div>
 
 </div>
 
