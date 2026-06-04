@@ -350,3 +350,86 @@ button[type="submit"] {
     border: 2px solid black;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
+
+
+/* ========================================================================
+    network.html
+======================================================================== */
+.posts-container {
+    max-width: 350px;
+    margin: 0 auto;
+
+    background-image: url('../../images/ActivityLogCard.png');
+    background-repeat: repeat;
+    background-size: cover;
+    background-position: center;
+    background-color: white;
+
+    padding: 70px 25px 25px 25px;
+    border-radius: 15px;
+    border: 2px solid black;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    color: white;
+
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding-bottom: 35px;
+}
+
+.post-card {
+    background-color: black;
+    color: white;
+    border: 2px solid red;
+    padding: 15px;
+    margin-top: 15px;
+    text-align: left;
+    position: relative;
+    z-index: 10;
+}
+
+.post-username {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.post-category {
+    font-size: 1.2em;
+    color: #ff4d4d;
+    margin: 0 0 8px 0;
+}
+
+.post-text {
+    font-size: 1.1em;
+    margin: 0 0 12px 0;
+}
+
+.delete-btn {
+    width: 100%;
+    padding: 10px;
+    color: white;
+    background-color: #b00000;
+    border: 2px solid white;
+    font-family: 'p5hatty', sans-serif;
+    font-size: 1.2em;
+    font-weight: bold;
+    position: relative;
+    z-index: 9999;
+    pointer-events: auto;
+}
+
+.posts-page {
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.fixed-back-btn {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    z-index: 9999;
+}

@@ -119,8 +119,7 @@
           return;
       }
 
-      // сброс в 00 06 12 18 часов
-      // индексы. 0: 00-06, 1: 06-12, 2: 12-18, 3: 18-00
+      // индексы. 0: 21-08, 1: 08-12, 2: 12-17, 3: 17-21
       const now = new Date();
       const currentHour = now.getHours();
 
@@ -140,15 +139,31 @@
       }
 
       const categoryValue = activeBtn.getAttribute("data-category");
+    const textValue = textarea.value.trim();
 
-      try{
-        const response = await apiFetch(`/api/activity/${categoryValue}`,{
+    if (!textValue) {
+        alert("Please enter your text!");
+        return;
+    }
+
+    try {
+        const activityResponse = await apiFetch(`/api/activity/${categoryValue}`, {
+            method: "POST"
+        });
+
+        const params = new URLSearchParams({
+            text: textValue,
+            category: categoryValue
+        });
+
+        const postResponse = await apiFetch(`/api/posts/activity?${params.toString()}`, {
             method: "POST"
         });
 
         localStorage.setItem("last_set_window", windowId);
 
-        console.log("Server response:", response);
+        console.log("Activity response:", activityResponse);
+        console.log("Post response:", postResponse);
         alert("Data sent!")
       } catch (error) {
         console.error("Error during send:", error)

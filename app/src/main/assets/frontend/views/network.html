@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="stylesheet" href="../styles/style.css">
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+</head>
+
+<body>
+
+<div class="posts-page">
+
+    <div class="posts-container posts-scroll">
+        <div id="postsContainer">
+            Loading...
+        </div>
+    </div>
+
+    <button class="back-btn fixed-back-btn" onclick="history.back()">
+        Back
+    </button>
+
+</div>
+
+<script>
+    const postsContainer = document.getElementById("postsContainer");
+
+    function getCategoryName(activityId) {
+        if (activityId === 1) return "Productivity";
+        if (activityId === 2) return "Social Life";
+        if (activityId === 3) return "Leisure";
+        return "Unknown";
+    }
+
+    async function getUsernameById(userId) {
+    try {
+        const user = await apiFetch(`/api/posts/user/id/${userId}`, {
+            method: "GET"
+        });
+
+        return user.Username;
+    } catch (error) {
+        console.error("Error getting username:", error);
+        return `User ${userId}`;
+    }
+}
+
+    async function loadPosts() {
+        try {
+            const currentUser = await apiFetch("/api/auth/users/me", {
+                method: "GET"
+            });
+
+            const productivity = await apiFetch("/api/posts/productivity", { method: "GET" });
+            const socialLife = await apiFetch("/api/posts/social-life", { method: "GET" });
+            const leisure = await apiFetch("/api/posts/leisure", { method: "GET" });
+
+            const allPosts = [
+                ...productivity,
+                ...socialLife,
+                ...leisure
+            ];
+
+            postsContainer.innerHTML = "";
+
+            if (allPosts.length === 0) {
+                postsContainer.innerHTML = "<p>No posts yet.</p>";
+                return;
+            }
+
+            for (const post of allPosts) {
+                const username = await getUsernameById(post.Author);
+                const canDelete = post.Author === currentUser.UserId;
+
+                const postElement = document.createElement("div");
+                postElement.className = "post-card";
+
+                postElement.innerHTML = `
+                    <p class="post-username">${username}</p>
+                    <p class="post-category">${getCategoryName(post.Activity)}</p>
+                    <p class="post-text">${post.Text}</p>
+
+                    ${
+                        canDelete
+                        ? `<button class="delete-btn" onclick="deleteMyPost()">Delete</button>`
+                        : ""
+                    }
+                `;
+
+                postsContainer.appendChild(postElement);
+            }
+
+        } catch (error) {
+            console.error("Error loading posts:", error);
+            postsContainer.innerHTML = "<p>Failed to load posts.</p>";
+        }
+    }
+
+    async function deleteMyPost() {
+        try {
+            await apiFetch("/api/posts/", {
+                method: "DELETE"
+            });
+
+            alert("Post deleted!");
+            loadPosts();
+
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            alert("Failed to delete post.");
+        }
+    }
+
+    loadPosts();
+</script>
+
+</body>
+</html>
