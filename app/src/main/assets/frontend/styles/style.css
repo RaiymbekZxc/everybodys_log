@@ -371,7 +371,7 @@ button[type="submit"] {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     color: white;
 
-    height: calc(100vh - 200px);
+    height: calc(100vh - 300px);
     overflow-y: auto;
     box-sizing: border-box;
     padding-bottom: 35px;

@@ -5,171 +5,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <link rel="stylesheet" href="../styles/style.css">
-    <script src= "../js/config.js"></script>
-    <script src= "../js/auth.js"></script>
-    <script src= "../js/api.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
 </head>
 
 <body>
 
 <div class="activity-container">
 
-    <div class="buttons navbar">
-        <a class="link-wrapper option-btn" href="#" data-category="productivity">
-            <span class="fallback">Productivity</span>
-            <div class="img-wrapper">
-                <img class="normal" src="../../images/productivity_normal.png">
-                <img class="active" src="../../images/productivity_active.png">
-            </div>
-            <div class="shape-wrapper">
-                <div class="shape red-fill jelly">
-                    <svg viewBox="0 0 108.1 47"><polygon fill="#FF0000" points="29.5,8.5 150.7,0 108.1,32.7 3.1,47"/></svg>
-                </div>
-                <div class="shape cyan-fill jelly">
-                    <svg viewBox="0 0 108.1 47"><polygon fill="#00FFFF" points="0.3,17 125.1,0 68.8,45.6 24.3,39"/></svg>
-                </div>
-            </div>
-        </a>
-
-        <a class="link-wrapper option-btn" href="#" data-category="social-life">
-            <span class="fallback">Social Life</span>
-            <div class="img-wrapper">
-                <img class="normal" src="../../images/social_life_normal.png">
-                <img class="active" src="../../images/social_life_active.png">
-            </div>
-            <div class="shape-wrapper">
-                <div class="shape red-fill jelly">
-                    <svg viewBox="0 0 108.1 47"><polygon fill="#FF0000" points="29.5,8.5 150.7,0 108.1,32.7 3.1,47"/></svg>
-                </div>
-                <div class="shape cyan-fill jelly">
-                    <svg viewBox="0 0 108.1 47"><polygon fill="#00FFFF" points="0.3,17 125.1,0 68.8,45.6 24.3,39"/></svg>
-                </div>
-            </div>
-        </a>
-
-        <a class="link-wrapper option-btn" href="#" data-category="leisure">
-            <span class="fallback">Leisure</span>
-            <div class="img-wrapper">
-                <img class="normal" src="../../images/leisure_normal.png">
-                <img class="active" src="../../images/leisure_active.png">
-            </div>
-            <div class="shape-wrapper">
-                <div class="shape red-fill jelly">
-                    <svg viewBox="0 0 108.1 47"><polygon fill="#FF0000" points="29.5,8.5 150.7,0 108.1,32.7 3.1,47"/></svg>
-                </div>
-                <div class="shape cyan-fill jelly">
-                    <svg viewBox="0 0 108.1 47"><polygon fill="#00FFFF" points="0.3,17 125.1,0 68.8,45.6 24.3,39"/></svg>
-                </div>
-            </div>
-        </a>
+    <div id="loadingBox">
+        <p>Loading...</p>
     </div>
 
-    <div class="textbox-container" id="textboxContainer">
-            <textarea
-                    id="message"
-                    maxlength="100"
-                    placeholder="Enter one sentence..."
-            ></textarea>
+    <div id="newPostBox" style="display: none;">
 
-        <div class="counter">
-            <span id="charCount">0</span>/100
+        <div class="buttons navbar">
+            <a class="link-wrapper option-btn" href="#" data-category="productivity">
+                <span class="fallback">Productivity</span>
+                <div class="img-wrapper">
+                    <img class="normal" src="../../images/productivity_normal.png">
+                    <img class="active" src="../../images/productivity_active.png">
+                </div>
+            </a>
+
+            <a class="link-wrapper option-btn" href="#" data-category="social-life">
+                <span class="fallback">Social Life</span>
+                <div class="img-wrapper">
+                    <img class="normal" src="../../images/social_life_normal.png">
+                    <img class="active" src="../../images/social_life_active.png">
+                </div>
+            </a>
+
+            <a class="link-wrapper option-btn" href="#" data-category="leisure">
+                <span class="fallback">Leisure</span>
+                <div class="img-wrapper">
+                    <img class="normal" src="../../images/leisure_normal.png">
+                    <img class="active" src="../../images/leisure_active.png">
+                </div>
+            </a>
         </div>
+
+        <div class="textbox-container" id="textboxContainer" style="display: none;">
+            <textarea id="message" maxlength="100" placeholder="Enter one sentence..."></textarea>
+            <div class="counter"><span id="charCount">0</span>/100</div>
+        </div>
+
+        <button class="send-btn" id="sendBtn">Send</button>
     </div>
 
-    <button class="send-btn" id="sendBtn">
-        Send
-    </button>
+    <div id="existingPostBox" style="display: none;">
+        <p class="post-category" id="existingCategory"></p>
+
+        <div class="textbox-container">
+            <textarea id="existingMessage" maxlength="100"></textarea>
+            <div class="counter"><span id="existingCharCount">0</span>/100</div>
+        </div>
+
+        <button class="send-btn" id="updateBtn">Update</button>
+        <button class="delete-btn" id="deleteBtn">Delete</button>
+    </div>
 
 </div>
 
-</div>
-
-<button class="back-btn" onclick="history.back()">
-    Back
-</button>
+<button class="back-btn" onclick="history.back()">Back</button>
 
 <script>
+    const loadingBox = document.getElementById("loadingBox");
+    const newPostBox = document.getElementById("newPostBox");
+    const existingPostBox = document.getElementById("existingPostBox");
+
     const buttons = document.querySelectorAll(".option-btn");
     const textboxContainer = document.getElementById("textboxContainer");
     const textarea = document.getElementById("message");
     const charCount = document.getElementById("charCount");
     const sendBtn = document.getElementById("sendBtn");
 
+    const existingCategory = document.getElementById("existingCategory");
+    const existingMessage = document.getElementById("existingMessage");
+    const existingCharCount = document.getElementById("existingCharCount");
+    const updateBtn = document.getElementById("updateBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+
+    let currentUser = null;
+    let existingPost = null;
+    let existingCategoryValue = null;
+
+    function getCategoryName(activityId) {
+        if (activityId === 1) return "Productivity";
+        if (activityId === 2) return "Social Life";
+        if (activityId === 3) return "Leisure";
+        return "Unknown";
+    }
+
+    function getCategoryValue(activityId) {
+        if (activityId === 1) return "productivity";
+        if (activityId === 2) return "social-life";
+        if (activityId === 3) return "leisure";
+        return "";
+    }
+
+    async function getAllPosts() {
+        const productivity = await apiFetch("/api/posts/productivity", { method: "GET" });
+        const socialLife = await apiFetch("/api/posts/social-life", { method: "GET" });
+        const leisure = await apiFetch("/api/posts/leisure", { method: "GET" });
+
+        return [...productivity, ...socialLife, ...leisure];
+    }
+
+    async function checkMyPost() {
+        try {
+            currentUser = await apiFetch("/api/auth/users/me", { method: "GET" });
+            const allPosts = await getAllPosts();
+
+            existingPost = allPosts.find(post => post.Author === currentUser.UserId);
+
+            loadingBox.style.display = "none";
+
+            if (existingPost) {
+                existingCategoryValue = getCategoryValue(existingPost.Activity);
+
+                existingCategory.textContent = getCategoryName(existingPost.Activity);
+                existingMessage.value = existingPost.Text;
+                existingCharCount.textContent = existingPost.Text.length;
+
+                existingPostBox.style.display = "block";
+                newPostBox.style.display = "none";
+            } else {
+                newPostBox.style.display = "block";
+                existingPostBox.style.display = "none";
+            }
+        } catch (error) {
+            console.error("Error checking post:", error);
+            loadingBox.innerHTML = "<p>Failed to load your activity post.</p>";
+        }
+    }
+
     buttons.forEach(button => {
-      button.addEventListener("click", (e) => {
-        e.preventDefault();
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
 
-        buttons.forEach(btn => btn.classList.remove("active"));
+            buttons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
 
-        button.classList.add("active");
-
-        textboxContainer.style.display = "flex";
-      });
+            textboxContainer.style.display = "flex";
+        });
     });
 
     textarea.addEventListener("input", () => {
-      charCount.textContent = textarea.value.length;
+        charCount.textContent = textarea.value.length;
+    });
+
+    existingMessage.addEventListener("input", () => {
+        existingCharCount.textContent = existingMessage.value.length;
     });
 
     sendBtn.addEventListener("click", async () => {
-      const activeBtn = document.querySelector(".option-btn.active");
+        const activeBtn = document.querySelector(".option-btn.active");
 
-      if (!activeBtn) {
-          alert("Please choose the category!");
-          return;
-      }
+        if (!activeBtn) {
+            alert("Please choose the category!");
+            return;
+        }
 
-      // индексы. 0: 21-08, 1: 08-12, 2: 12-17, 3: 17-21
-      const now = new Date();
-      const currentHour = now.getHours();
+        const categoryValue = activeBtn.getAttribute("data-category");
+        const textValue = textarea.value.trim();
 
-      const windowIndex = Math.floor(currentHour / 6);
-      const windowId = `${now.toDateString()}_${windowIndex}`;
+        if (!textValue) {
+            alert("Please enter your text!");
+            return;
+        }
 
-      if (localStorage.getItem("last_set_window") == windowId){
-        let nextReset = "";
-        if (windowIndex === 0) nextReset = "08:00";
-        else if (windowIndex === 1) nextReset = "12:00";
-        else if (windowIndex === 2) nextReset = "17:00";
-        else nextReset = "21:00";
+        try {
+            await apiFetch(`/api/activity/${categoryValue}`, {
+                method: "POST"
+            });
 
-        alert(`You've already sent data for this timestamp. Next slot opens at ${nextReset}.`);
-        console.log("уже отправлял");
-        return;
-      }
+            const params = new URLSearchParams({
+                text: textValue,
+                category: categoryValue
+            });
 
-      const categoryValue = activeBtn.getAttribute("data-category");
-    const textValue = textarea.value.trim();
+            await apiFetch(`/api/posts/activity?${params.toString()}`, {
+                method: "POST"
+            });
 
-    if (!textValue) {
-        alert("Please enter your text!");
-        return;
-    }
-
-    try {
-        const activityResponse = await apiFetch(`/api/activity/${categoryValue}`, {
-            method: "POST"
-        });
-
-        const params = new URLSearchParams({
-            text: textValue,
-            category: categoryValue
-        });
-
-        const postResponse = await apiFetch(`/api/posts/activity?${params.toString()}`, {
-            method: "POST"
-        });
-
-        localStorage.setItem("last_set_window", windowId);
-
-        console.log("Activity response:", activityResponse);
-        console.log("Post response:", postResponse);
-        alert("Data sent!")
-      } catch (error) {
-        console.error("Error during send:", error)
-        alert("Something went wrong:", error.message);
-      }
+            alert("Data sent!");
+            location.reload();
+        } catch (error) {
+            console.error("Error during send:", error);
+            alert("Something went wrong: " + error.message);
+        }
     });
+
+    updateBtn.addEventListener("click", async () => {
+        const newText = existingMessage.value.trim();
+
+        if (!newText) {
+            alert("Text cannot be empty!");
+            return;
+        }
+
+        try {
+            await apiFetch("/api/posts/", {
+                method: "DELETE"
+            });
+
+            const params = new URLSearchParams({
+                text: newText,
+                category: existingCategoryValue
+            });
+
+            await apiFetch(`/api/posts/activity?${params.toString()}`, {
+                method: "POST"
+            });
+
+            alert("Post updated!");
+            location.reload();
+        } catch (error) {
+            console.error("Update error:", error);
+            alert("Update failed: " + error.message);
+        }
+    });
+
+    deleteBtn.addEventListener("click", async () => {
+        try {
+            await apiFetch("/api/posts/", {
+                method: "DELETE"
+            });
+
+            alert("Post deleted!");
+            location.reload();
+        } catch (error) {
+            console.error("Delete error:", error);
+            alert("Delete failed: " + error.message);
+        }
+    });
+
+    checkMyPost();
 </script>
 
 </body>
