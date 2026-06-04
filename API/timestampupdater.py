@@ -3,11 +3,11 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-from sqlmodel import select
+from sqlmodel import select, delete
 from datetime import datetime
 import pytz
 
-from .models import tblCategory, Almaty
+from .models import tblCategory, Almaty, tblUsersText
 from .database import Session, engine
 from .auth import database_save
 
@@ -29,6 +29,9 @@ def get_current_period():
 def reset_period():
     with Session(engine) as session:
         categories = session.exec(select(tblCategory)).all()
+        
+        session.exec(delete(tblUsersText))
+        session.commit()
         
         for category in categories:
             category.PeopleClicked = 0
