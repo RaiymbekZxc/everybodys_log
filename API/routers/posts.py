@@ -25,7 +25,7 @@ async def activity_post(text: str, category: CategoryType, session: SessionDep, 
 
 @router.delete("/")
 async def deletion(session: SessionDep, user: userOut = Depends(get_current_user)):
-    statement = delete(tblUsersText).where(tblUsersText.Author == user.UserId)  # type: ignore
+    statement = delete(tblUsersText).where(tblUsersText.Author == user.UserId) #type: ignore
     session.exec(statement)
     session.commit()
     return {"details": "Deleted."}
