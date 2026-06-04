@@ -86,3 +86,8 @@ class tblUsersText(SQLModel, table=True):
 
 class UsersTextOut(tblUsersText): 
     pass 
+
+class UserGet(Enum):
+    UserId = "id"
+    Email = "email"
+    Username = "username"

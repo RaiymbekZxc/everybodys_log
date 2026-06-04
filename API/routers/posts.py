@@ -1,8 +1,9 @@
 
 from fastapi import APIRouter, Depends, Query
-from ..models import CategoryType, tblUsersText, userOut, categories, UsersTextOut
+from fastapi.exceptions import HTTPException
+from ..models import CategoryType, tblUsersText, userOut, categories, UsersTextOut, UserGet
 from ..database import SessionDep
-from ..auth import get_current_user, database_save
+from ..auth import get_current_user, database_save, get_user
 from sqlmodel import select, delete
 
 
@@ -35,3 +36,16 @@ async def deletion(session: SessionDep, user: userOut = Depends(get_current_user
     statement = delete(tblUsersText).where(tblUsersText.Author == user.UserId)  # type: ignore
     session.exec(statement)
     return {"details": "Deleted."}
+
+@router.get("/user/{type}/{info}")
+async def getuser(session: SessionDep, type: UserGet, info: str):
+    match type.value:
+        case "id":
+            user = get_user(session=session, id=int(info))
+        case "email":
+            user = get_user(session=session, email=info)
+        case "username":
+            user = get_user(session=session, username=info)
+    if not user:
+        raise HTTPException(404, detail="User not found")
+    return user

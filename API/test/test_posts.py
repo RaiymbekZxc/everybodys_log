@@ -109,3 +109,69 @@ def test_delete_posts_not_authenticated(client_factory):
     client = client_factory()
     r = client.delete("/api/posts/")
     assert r.status_code == 401
+
+def test_get_user_by_id(client_factory, session):
+    user = make_user(user_id=1, username="user")
+    session.add(user)
+    session.commit()
+
+    client = client_factory(user=user)
+    r = client.get("/api/posts/user/id/1")
+    assert r.status_code == 200
+    assert r.json()["Username"] == "user"
+
+def test_get_user_by_username(client_factory, session):
+    user = make_user(user_id=1, username="user")
+    session.add(user)
+    session.commit()
+
+    client = client_factory(user=user)
+    r = client.get("/api/posts/user/username/user")
+    assert r.status_code == 200
+    assert r.json()["Username"] == "user"
+
+def test_get_user_by_email(client_factory, session):
+    user = make_user(user_id=1, username="user")
+    session.add(user)
+    session.commit()
+
+    client = client_factory(user=user)
+    r = client.get("/api/posts/user/email/user@test.com")
+    assert r.status_code == 200
+    assert r.json()["Username"] == "user"
+
+def test_get_user_not_found_by_id(client_factory, session):
+    user = make_user(user_id=1, username="user")
+    session.add(user)
+    session.commit()
+
+    client = client_factory(user=user)
+    r = client.get("/api/posts/user/id/999")
+    assert r.status_code == 404
+
+def test_get_user_not_found_by_username(client_factory, session):
+    user = make_user(user_id=1, username="user")
+    session.add(user)
+    session.commit()
+
+    client = client_factory(user=user)
+    r = client.get("/api/posts/user/username/nonexistent")
+    assert r.status_code == 404
+
+def test_get_user_not_found_by_email(client_factory, session):
+    user = make_user(user_id=1, username="user")
+    session.add(user)
+    session.commit()
+
+    client = client_factory(user=user)
+    r = client.get("/api/posts/user/email/nonexistent@test.com")
+    assert r.status_code == 404
+
+def test_get_user_invalid_type(client_factory, session):
+    user = make_user(user_id=1, username="user")
+    session.add(user)
+    session.commit()
+
+    client = client_factory(user=user)
+    r = client.get("/api/posts/user/invalid/user")
+    assert r.status_code == 422
