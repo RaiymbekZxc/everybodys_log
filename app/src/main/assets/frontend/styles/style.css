@@ -433,3 +433,121 @@ button[type="submit"] {
     transform: translateX(-50%);
     z-index: 9999;
 }
+
+
+.profile-page {
+
+    background-image: url('../../images/ProfileCard.png');
+
+    background-repeat: no-repeat;
+
+    background-position: center;
+
+    background-size: cover;
+
+    background-color: black;
+
+    padding: 0;
+
+    margin: 0;
+
+    overflow: hidden;
+}
+
+.profile-content {
+
+    position: absolute;
+
+    top: 180px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 290px;
+
+    color: white;
+}
+
+.profile-row {
+
+    margin-bottom: 18px;
+
+    border: 2px solid red;
+
+    background: rgba(0,0,0,0.85);
+
+    padding: 12px;
+
+    box-sizing: border-box;
+}
+}
+
+.profile-label {
+
+    color: white;
+
+    font-size: 1.3em;
+
+    margin-bottom: 10px;
+
+    display: block;
+}
+.profile-value {
+
+    color: white;
+
+    font-size: 1.4em;
+
+    word-break: break-word;
+}
+
+.profile-btn {
+
+    width: 100%;
+
+    height: 50px;
+
+    margin-top: 12px;
+
+    color: white;
+
+    background: black;
+
+    border: 2px solid red;
+
+    outline: 2px solid black;
+
+    font-family: 'p5hatty', sans-serif;
+
+    font-size: 1.3em;
+
+    cursor: pointer;
+}
+
+.profile-edit-input {
+    width: 100%;
+    padding: 12px;
+
+    background-color: black;
+    color: white;
+
+    border: 2px solid red;
+    outline: 2px solid black;
+
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+
+    box-sizing: border-box;
+
+    caret-color: white;
+}
+
+#editSection {
+
+    display: none;
+}
+
+#passwordSection {
+    display: none;
+}

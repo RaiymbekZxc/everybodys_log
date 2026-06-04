@@ -1,75 +1,390 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+
+    <link rel="stylesheet" href="../styles/style.css">
 
     <script src="../js/config.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/api.js"></script>
-
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        .card { border: 1px solid #ccc; border-radius: 12px; padding: 16px; max-width: 420px; }
-        .row { margin: 10px 0; }
-        .label { font-weight: bold; }
-        button { margin-top: 14px; padding: 10px 16px; cursor: pointer; }
-        #status { margin-top: 12px; }
-    </style>
 </head>
-<body>
 
-<h2>User Profile</h2>
+<body class="profile-page">
 
-<div class="card">
-    <div class="row"><span class="label">User ID:</span> <span id="UserId">Loading...</span></div>
-    <div class="row"><span class="label">Username:</span> <span id="Username">Loading...</span></div>
-    <div class="row"><span class="label">Email:</span> <span id="Email">Loading...</span></div>
-    <div class="row"><span class="label">Is Active:</span> <span id="IsActive">Loading...</span></div>
-    <div class="row"><span class="label">Is Admin:</span> <span id="IsAdmin">Loading...</span></div>
+<div class="profile-content">
 
-    <button onclick="logout()">Logout</button>
+    <div class="error" id="error"></div>
+    <div class="success" id="success"></div>
+
+    <!-- VIEW MODE -->
+
+    <div id="viewSection">
+
+        <div class="profile-row">
+            <div class="profile-label">User ID</div>
+            <div id="UserId" class="profile-value">
+                Loading...
+            </div>
+        </div>
+
+        <div class="profile-row">
+            <div class="profile-label">Username</div>
+            <div id="UsernameText" class="profile-value">
+                Loading...
+            </div>
+        </div>
+
+        <div class="profile-row">
+            <div class="profile-label">Email</div>
+            <div id="EmailText" class="profile-value">
+                Loading...
+            </div>
+        </div>
+
+        <button
+                class="profile-btn"
+                onclick="enableEdit()">
+            Edit Username
+        </button>
+
+        <button
+                class="profile-btn"
+                onclick="enablePasswordEdit()">
+            Change Password
+        </button>
+
+        <button
+                class="profile-btn"
+                onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+    <!-- EDIT MODE -->
+
+    <div id="editSection">
+
+        <div class="profile-row">
+
+            <div class="profile-label">
+                Username
+            </div>
+
+            <input
+                    class="profile-edit-input"
+                    type="text"
+                    id="UsernameInput">
+        </div>
+
+        <button
+                class="profile-btn"
+                onclick="saveProfile()">
+            Save Changes
+        </button>
+
+        <button
+                class="profile-btn"
+                onclick="cancelEdit()">
+            Cancel
+        </button>
+
+    </div>
+    <div id="passwordSection">
+
+        <div class="profile-row">
+
+            <div class="profile-label">
+                Current Password
+            </div>
+
+            <input
+                    class="profile-edit-input"
+                    type="password"
+                    id="CurrentPassword">
+
+        </div>
+
+        <div class="profile-row">
+
+            <div class="profile-label">
+                New Password
+            </div>
+
+            <input
+                    class="profile-edit-input"
+                    type="password"
+                    id="NewPassword">
+
+        </div>
+
+        <button
+                class="profile-btn"
+                onclick="changePassword()">
+            Save Password
+        </button>
+
+        <button
+                class="profile-btn"
+                onclick="cancelPasswordEdit()">
+            Cancel
+        </button>
+
+    </div>
+
+    <button
+            class="back-btn"
+            onclick="window.location.href='main_page.html'">
+        Back
+    </button>
 </div>
 
-<p id="status"></p>
 
 <script>
-    async function loadProfile() {
-      const status = document.getElementById("status");
 
-      if (!getToken()) {
+    let currentUser = null;
+
+    async function loadProfile() {
+
+    console.log("TOKEN:", getToken());
+
+    if (!getToken()) {
         window.location.href = "login.html";
         return;
-      }
-
-      try {
-        const user = await apiFetch("/api/auth/users/me");
-
-        document.getElementById("UserId").textContent = user.UserId;
-        document.getElementById("Username").textContent = user.Username;
-        document.getElementById("Email").textContent = user.Email;
-        document.getElementById("IsActive").textContent = user.IsActive;
-        document.getElementById("IsAdmin").textContent = user.IsAdmin;
-
-        status.textContent = "";
-      } catch (e) {
-        clearToken();
-        status.textContent = "Session expired. Redirecting to login...";
-        setTimeout(() => window.location.href = "login.html", 800);
-      }
     }
+
+    try {
+
+        const user =
+            await apiFetch("/api/auth/users/me");
+
+        console.log("USER:", user);
+
+        currentUser = user;
+
+        let idText =
+            user.UserId;
+
+        if (user.IsAdmin)
+            idText += " ★";
+
+        document.getElementById("UserId")
+            .textContent = idText;
+
+        document.getElementById("UsernameText")
+            .textContent = user.Username;
+
+        document.getElementById("EmailText")
+            .textContent = user.Email;
+
+    }
+    catch (e) {
+
+        console.error("LOAD PROFILE ERROR:", e);
+
+        document.getElementById("error")
+            .textContent =
+            "Profile load failed: " + e.message;
+    }
+}
+
+    function enableEdit() {
+
+    document.getElementById("viewSection")
+        .style.display = "none";
+
+    document.getElementById("passwordSection")
+        .style.display = "none";
+
+    document.getElementById("editSection")
+        .style.display = "block";
+
+    document.getElementById("UsernameInput")
+        .value = currentUser.Username;
+}
+
+    function cancelEdit() {
+
+    document.getElementById("editSection")
+        .style.display = "none";
+
+    document.getElementById("viewSection")
+        .style.display = "block";
+
+    document.getElementById("error")
+        .textContent = "";
+}
+    function enablePasswordEdit() {
+
+    document.getElementById("viewSection")
+        .style.display = "none";
+
+    document.getElementById("editSection")
+        .style.display = "none";
+
+    document.getElementById("passwordSection")
+        .style.display = "block";
+
+    document.getElementById("CurrentPassword")
+        .value = "";
+
+    document.getElementById("NewPassword")
+        .value = "";
+}
+
+    function cancelPasswordEdit() {
+
+    document.getElementById("passwordSection")
+        .style.display = "none";
+
+    document.getElementById("viewSection")
+        .style.display = "block";
+
+    document.getElementById("error")
+        .textContent = "";
+}
+
+    async function saveProfile() {
+
+    const username =
+        document.getElementById("UsernameInput")
+            .value.trim();
+
+    if (!username) {
+
+        document.getElementById("error")
+            .textContent =
+            "Username cannot be empty.";
+
+        return;
+    }
+
+    try {
+
+        await apiFetch(
+    "/api/auth/users/me",
+    {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            TypeOfInteraction: "username",
+            Username: username
+        })
+    }
+);
+        currentUser.Username = username;
+
+        document.getElementById("UsernameText")
+            .textContent = username;
+
+        document.getElementById("success")
+            .textContent =
+            "Username updated successfully.";
+        setTimeout(() => {
+    document.getElementById("success")
+        .textContent = "";
+}, 3000);
+        cancelEdit();
+    }
+    catch (e) {
+
+    console.error(e);
+
+    document.getElementById("error")
+        .textContent =
+        e.message || "Failed to update username.";
+}
+}
+
+    async function changePassword() {
+
+    const currentPassword =
+        document.getElementById("CurrentPassword")
+            .value;
+
+    const newPassword =
+        document.getElementById("NewPassword")
+            .value;
+
+    if (!currentPassword || !newPassword) {
+
+        document.getElementById("error")
+            .textContent =
+            "Fill in all password fields.";
+
+        return;
+    }
+
+    try {
+
+        await apiFetch(
+    "/api/auth/users/me",
+    {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            TypeOfInteraction: "password",
+            UserName: currentUser.Username,
+            Password: currentPassword,
+            NewPassword: newPassword
+        })
+    }
+);
+
+        document.getElementById("success")
+            .textContent =
+            "Password changed successfully.";
+
+        document.getElementById("success")
+    .textContent =
+    "Password changed successfully.";
+
+setTimeout(() => {
+    document.getElementById("success")
+        .textContent = "";
+}, 3000);
+
+        cancelPasswordEdit();
+    }
+    catch (e) {
+
+        console.error(e);
+
+        document.getElementById("error")
+            .textContent =
+            "Failed to change password.";
+    }
+}
 
     async function logout() {
-      try {
-        await apiFetch("/api/auth/logout", { method: "POST" });
-      } catch (_) {
-      }
-      clearToken();
-      window.location.href = "login.html";
+
+        try {
+
+            await apiFetch(
+                "/api/auth/logout",
+                {
+                    method: "POST"
+                }
+            );
+
+        } catch (_) {}
+
+        clearToken();
+
+        window.location.href =
+            "login.html";
     }
 
-    window.onload = loadProfile;
+    window.onload =
+        loadProfile;
+
 </script>
 
 </body>
