@@ -23,18 +23,11 @@ async def activity_post(text: str, category: CategoryType, session: SessionDep, 
 
     return {"details": "OK"}
 
-@router.get("/{category}", response_model=list[UsersTextOut])
-async def posts(session: SessionDep, category: CategoryType, page: int = Query(default=1, ge=1)):
-    offset = (page - 1) * 5
-    
-    posts = session.exec(select(tblUsersText).where(tblUsersText.Activity == categories[category]).offset(offset).limit(5)).all()
-
-    return posts
-
 @router.delete("/")
 async def deletion(session: SessionDep, user: userOut = Depends(get_current_user)):
     statement = delete(tblUsersText).where(tblUsersText.Author == user.UserId)  # type: ignore
     session.exec(statement)
+    session.commit()
     return {"details": "Deleted."}
 
 @router.get("/user/{type}/{info}")
@@ -49,3 +42,11 @@ async def getuser(session: SessionDep, type: UserGet, info: str):
     if not user:
         raise HTTPException(404, detail="User not found")
     return user
+
+@router.get("/{category}", response_model=list[UsersTextOut])
+async def posts(session: SessionDep, category: CategoryType, page: int = Query(default=1, ge=1)):
+    offset = (page - 1) * 5
+
+    posts = session.exec(select(tblUsersText).where(tblUsersText.Activity == categories[category]).offset(offset).limit(5)).all()
+
+    return posts

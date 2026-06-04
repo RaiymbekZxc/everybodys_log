@@ -403,6 +403,10 @@ button[type="submit"] {
 .post-text {
     font-size: 1.1em;
     margin: 0 0 12px 0;
+
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 
 .delete-btn {
@@ -550,4 +554,30 @@ button[type="submit"] {
 
 #passwordSection {
     display: none;
+}
+
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.filter-btn {
+    background: black;
+    color: white;
+    border: 2px solid red;
+    padding: 8px 10px;
+    font-family: 'p5hatty', sans-serif;
+    font-size: 0.9em;
+}
+
+.active-filter {
+    background: red;
+    color: white;
+}
+
+button, a {
+    touch-action: manipulation;
 }
