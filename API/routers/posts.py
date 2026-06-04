@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, Query
 from ..models import CategoryType, tblUsersText, userOut, categories, UsersTextOut
 from ..database import SessionDep
 from ..auth import get_current_user, database_save
-from sqlmodel import select
+from sqlmodel import select, delete
+
 
 router = APIRouter(prefix="/posts", dependencies=[Depends(get_current_user)])
 
@@ -29,3 +30,8 @@ async def posts(session: SessionDep, category: CategoryType, page: int = Query(d
 
     return posts
 
+@router.delete("/")
+async def deletion(session: SessionDep, user: userOut = Depends(get_current_user)):
+    statement = delete(tblUsersText).where(tblUsersText.Author == user.UserId)  # type: ignore
+    session.exec(statement)
+    return {"details": "Deleted."}
