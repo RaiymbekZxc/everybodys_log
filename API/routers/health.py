@@ -4,7 +4,7 @@ from fastapi.exceptions import HTTPException
 
 from ..database import SessionDep
 
-router = APIRouter(prefix="/health")
+router = APIRouter(prefix="/health", tags=["Production"])
 
 @router.get("/")
 async def health():
