@@ -83,8 +83,6 @@ def test_register_missing_fields(client_no_auth):
     r = client_no_auth.post("/api/auth/register", json={"Username": "newuser"})
     assert r.status_code == 422
 
-# ── POST /api/auth/logout ─────────────────────────────────────────
-
 def test_logout(client_no_auth, session):
     user = make_user(user_id=1, username="user")
     user.hashed_password = get_password_hash("password123")
