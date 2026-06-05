@@ -7,7 +7,7 @@ from ..auth import get_current_user, database_save, get_user
 from sqlmodel import select, delete
 
 
-router = APIRouter(prefix="/posts", dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/posts", dependencies=[Depends(get_current_user)], tags=["For Alidar's component"])
 
 @router.post("/activity")
 async def activity_post(text: str, category: CategoryType, session: SessionDep, current_user: userOut = Depends(get_current_user)):

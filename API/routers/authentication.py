@@ -13,7 +13,7 @@ from ..auth import (tblUser, authenticate_user, verify_password, create_access_t
 from ..models import Token, UserCreate, UserUpdate, UpdateType, userOut
 from ..database import SessionDep
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth", tags=["For Raiymbek's component"])
 
 @router.get('/users/me', response_model=userOut)
 async def read_users_me(current_user: Annotated[str, Depends(get_current_user)]):

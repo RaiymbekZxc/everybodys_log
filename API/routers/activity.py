@@ -7,7 +7,7 @@ from ..auth import get_current_user, database_save
 from ..models import tblUser, CategoryType, tblCategory, ActivityInfo
 from ..database import SessionDep
 
-router = APIRouter(prefix="/activity", dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/activity", dependencies=[Depends(get_current_user)], tags=["For Alidar's component"])
 
 @router.get("/info")
 async def act_persentages(session: SessionDep) -> ActivityInfo:
