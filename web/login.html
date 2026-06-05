@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign In | Everyone's Log</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="login">
+  <div class="app-shell auth-shell">
+    <aside class="side-panel">
+      <div class="brand">
+        <span class="brand-mark">P5</span>
+        <div>
+          <h1>Everyone's Log</h1>
+          <p>Persona activity network</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Account">
+        <a class="nav-btn active" href="login.html">Sign In</a>
+        <a class="nav-btn" href="register.html">Register</a>
+      </nav>
+
+    </aside>
+
+    <main class="main-panel">
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <form class="panel auth-panel" id="loginForm">
+        <h2>Sign In</h2>
+        <label>
+          Username
+          <input id="loginUsername" autocomplete="username" required>
+        </label>
+        <label>
+          Password
+          <input id="loginPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="primary" type="submit">Sign In</button>
+        <p class="switch-link">No account? <a href="register.html">Register</a></p>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

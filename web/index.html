@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Everyone's Log</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="dashboard">
+  <div class="app-shell">
+    <aside class="side-panel">
+      <div class="brand">
+        <span class="brand-mark">P5</span>
+        <div>
+          <h1>Everyone's Log</h1>
+          <p>Persona activity network</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-btn active" href="index.html">Dashboard</a>
+        <a class="nav-btn" href="activity.html">Activity Log</a>
+        <a class="nav-btn" href="network.html">Network</a>
+        <a class="nav-btn" href="profile.html">Profile</a>
+        <a class="nav-btn" href="admin.html">Admin</a>
+      </nav>
+
+      <div class="session-card">
+        <span id="sessionStatus">Signed in</span>
+        <button id="quickLogout" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+
+      <div class="topline">
+        <div>
+          <p class="eyebrow">Current period</p>
+          <h2 id="periodLabel">Loading...</h2>
+        </div>
+        <button id="refreshDashboard" type="button">Refresh</button>
+      </div>
+
+      <div class="score-grid">
+        <article class="score-card productivity">
+          <span>Productivity</span>
+          <strong id="productivityPct">0%</strong>
+          <small id="productivityCount">0 votes</small>
+        </article>
+        <article class="score-card social">
+          <span>Social Life</span>
+          <strong id="socialPct">0%</strong>
+          <small id="socialCount">0 votes</small>
+        </article>
+        <article class="score-card leisure">
+          <span>Leisure</span>
+          <strong id="leisurePct">0%</strong>
+          <small id="leisureCount">0 votes</small>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

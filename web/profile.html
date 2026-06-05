@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile | Everyone's Log</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="profile">
+  <div class="app-shell">
+    <aside class="side-panel">
+      <div class="brand">
+        <span class="brand-mark">P5</span>
+        <div>
+          <h1>Everyone's Log</h1>
+          <p>Persona activity network</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-btn" href="index.html">Dashboard</a>
+        <a class="nav-btn" href="activity.html">Activity Log</a>
+        <a class="nav-btn" href="network.html">Network</a>
+        <a class="nav-btn active" href="profile.html">Profile</a>
+        <a class="nav-btn" href="admin.html">Admin</a>
+      </nav>
+      <div class="session-card">
+        <span id="sessionStatus">Signed in</span>
+        <button id="quickLogout" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <div class="topline">
+        <div>
+          <p class="eyebrow">Account</p>
+          <h2>Profile</h2>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <section class="panel">
+          <dl class="profile-list">
+            <div>
+              <dt>User ID</dt>
+              <dd id="profileId">...</dd>
+            </div>
+            <div>
+              <dt>Username</dt>
+              <dd id="profileUsername">...</dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd id="profileEmail">...</dd>
+            </div>
+          </dl>
+        </section>
+
+        <form class="panel" id="usernameForm">
+          <h3>Edit Username</h3>
+          <label>
+            New username
+            <input id="newUsername" required>
+          </label>
+          <button class="primary" type="submit">Update Username</button>
+        </form>
+
+        <form class="panel" id="passwordForm">
+          <h3>Change Password</h3>
+          <label>
+            Current password
+            <input id="currentPassword" type="password" required>
+          </label>
+          <label>
+            New password
+            <input id="newPassword" type="password" required>
+          </label>
+          <button class="primary" type="submit">Update Password</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

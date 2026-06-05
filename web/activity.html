@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Activity Log | Everyone's Log</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="activity">
+  <div class="app-shell">
+    <aside class="side-panel">
+      <div class="brand">
+        <span class="brand-mark">P5</span>
+        <div>
+          <h1>Everyone's Log</h1>
+          <p>Persona activity network</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-btn" href="index.html">Dashboard</a>
+        <a class="nav-btn active" href="activity.html">Activity Log</a>
+        <a class="nav-btn" href="network.html">Network</a>
+        <a class="nav-btn" href="profile.html">Profile</a>
+        <a class="nav-btn" href="admin.html">Admin</a>
+      </nav>
+      <div class="session-card">
+        <span id="sessionStatus">Signed in</span>
+        <button id="quickLogout" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <div class="topline">
+        <div>
+          <p class="eyebrow">Your entry</p>
+          <h2>Activity Log</h2>
+        </div>
+        <button id="reloadMine" type="button">Reload</button>
+      </div>
+
+      <form class="panel activity-editor" id="activityForm">
+        <div class="category-picker" role="radiogroup" aria-label="Activity category">
+          <button class="category-btn" type="button" data-category="productivity">
+            <img src="assets/images/productivity_normal.png" alt="">
+            <span>Productivity</span>
+          </button>
+          <button class="category-btn" type="button" data-category="social-life">
+            <img src="assets/images/social_life_normal.png" alt="">
+            <span>Social Life</span>
+          </button>
+          <button class="category-btn" type="button" data-category="leisure">
+            <img src="assets/images/leisure_normal.png" alt="">
+            <span>Leisure</span>
+          </button>
+        </div>
+
+        <label>
+          One sentence
+          <textarea id="activityText" maxlength="100" rows="4" required></textarea>
+        </label>
+        <div class="form-row">
+          <span id="charCounter">0/100</span>
+          <div>
+            <button id="deletePost" class="danger" type="button">Delete</button>
+            <button class="primary" type="submit">Save Entry</button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
