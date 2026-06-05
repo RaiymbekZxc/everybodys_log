@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             "AndroidInterface"
         )
 
-        webView.loadUrl("file:///android_asset/frontend/views/main_page.html")
+        webView.loadUrl("file:///android_asset/frontend/views/login.html")
 
         requestLocationPermissionsIfNeeded()
     }

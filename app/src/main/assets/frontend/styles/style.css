@@ -126,9 +126,22 @@ button[type="submit"] {
 }
 
 .error {
-  color: #f87171;
-  margin-bottom: 10px;
-  font-size: 0.8em;
+
+    color: white;
+
+    font-size: 1.0em;
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    margin-bottom: 15px;
+
+    text-shadow:
+        2px 2px 0 black,
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black;
 }
 
 .success {
@@ -441,51 +454,36 @@ button[type="submit"] {
 
 .profile-page {
 
-    background-image: url('../../images/ProfileCard.png');
-
-    background-repeat: no-repeat;
-
-    background-position: center;
+    background-image:
+        url('../../images/ProfileCard.png');
 
     background-size: cover;
 
+    background-position: center;
+
+    background-repeat: no-repeat;
+
     background-color: black;
-
-    padding: 0;
-
-    margin: 0;
-
-    overflow: hidden;
 }
 
 .profile-content {
 
-    position: absolute;
-
-    top: 180px;
-
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    width: 290px;
-
-    color: white;
+    width: 100%;
 }
 
 .profile-row {
 
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 
     border: 2px solid red;
 
     background: rgba(0,0,0,0.85);
 
-    padding: 12px;
+    padding: 8px;
 
     box-sizing: border-box;
 }
-}
+
 
 .profile-label {
 
@@ -510,7 +508,7 @@ button[type="submit"] {
 
     width: 100%;
 
-    height: 50px;
+    height: 42px;
 
     margin-top: 12px;
 
@@ -524,9 +522,11 @@ button[type="submit"] {
 
     font-family: 'p5hatty', sans-serif;
 
-    font-size: 1.3em;
+    font-size: 1em;
 
     cursor: pointer;
+
+    border-radius: 10px;
 }
 
 .profile-edit-input {
@@ -547,6 +547,27 @@ button[type="submit"] {
     caret-color: white;
 }
 
+.profile-back-btn {
+
+    display: block;
+
+        width: 320px;
+
+        margin: 20px auto 40px auto;
+    }
+.profile-card {
+
+    width: 90%;
+    max-width: 360px;
+
+    margin: 40px auto 30px auto;
+
+    background: black;
+
+    padding: 20px;
+
+    border-radius: 25px;
+}
 #editSection {
 
     display: none;
@@ -580,4 +601,11 @@ button[type="submit"] {
 
 button, a {
     touch-action: manipulation;
+}
+
+body {
+
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease;
 }

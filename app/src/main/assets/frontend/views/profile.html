@@ -16,10 +16,9 @@
 
 <div class="profile-content">
 
-    <div class="error" id="error"></div>
-    <div class="success" id="success"></div>
+    <div class="profile-card">    <div class="error" id="error"></div>
 
-    <!-- VIEW MODE -->
+    <div class="success" id="success"></div>
 
     <div id="viewSection">
 
@@ -134,14 +133,10 @@
         </button>
 
     </div>
-
-    <button
-            class="back-btn"
-            onclick="window.location.href='main_page.html'">
-        Back
-    </button>
+    </div>
 </div>
 
+<button id="backBtn" class="back-btn profile-back-btn" onclick="window.location.href='main_page.html'"> Back </button>
 
 <script>
 
@@ -204,6 +199,8 @@
 
     document.getElementById("UsernameInput")
         .value = currentUser.Username;
+    document.getElementById("backBtn")
+    .style.display = "none";
 }
 
     function cancelEdit() {
@@ -216,6 +213,8 @@
 
     document.getElementById("error")
         .textContent = "";
+    document.getElementById("backBtn")
+    .style.display = "block";
 }
     function enablePasswordEdit() {
 
@@ -233,6 +232,8 @@
 
     document.getElementById("NewPassword")
         .value = "";
+    document.getElementById("backBtn")
+    .style.display = "none";
 }
 
     function cancelPasswordEdit() {
@@ -245,6 +246,8 @@
 
     document.getElementById("error")
         .textContent = "";
+    document.getElementById("backBtn")
+    .style.display = "block";
 }
 
     async function saveProfile() {

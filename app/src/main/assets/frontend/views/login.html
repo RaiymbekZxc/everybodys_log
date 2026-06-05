@@ -9,6 +9,13 @@
 
     <script src="../js/config.js"></script>
     <script src="../js/auth.js"></script>
+    <script>
+
+        if (getToken()) {
+            window.location.href = "main_page.html";
+        }
+
+    </script>
 </head>
 
 <body>
@@ -92,7 +99,7 @@
                 window.AndroidInterface.saveTokenToAndroid(data.access_token);
             }
 
-            window.location.href = "profile.html";
+            window.location.href = "main_page.html";
 
         }
         catch (e) {
