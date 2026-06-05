@@ -4,7 +4,7 @@ import pytest
 from ..main import app
 from ..models import tblUser, CategoryType, tblCategory
 from ..database import get_session
-from ..auth import get_current_user
+from ..auth import get_current_user, blacklisted_tokens
 
 from fastapi.testclient import TestClient
 
@@ -52,3 +52,7 @@ def client_factory(session):
     yield _make_client
     app.dependency_overrides.clear()
 
+@pytest.fixture(autouse=True)
+def clear_blacklist():
+    yield
+    blacklisted_tokens.clear()
