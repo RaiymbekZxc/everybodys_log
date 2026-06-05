@@ -466,6 +466,20 @@ button[type="submit"] {
     background-color: black;
 }
 
+.admin-page {
+
+    background-image:
+        url('../../images/StarsBG.png');
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
+    background-color: black;
+}
+
 .profile-content {
 
     width: 100%;

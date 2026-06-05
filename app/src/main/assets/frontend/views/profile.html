@@ -56,6 +56,14 @@
         </button>
 
         <button
+            id="adminBtn"
+            class="profile-btn"
+            onclick="window.location.href='admin.html'"
+            style="display:none;">
+        Admin Panel
+        </button>
+
+        <button
                 class="profile-btn"
                 onclick="logout()">
             Logout
@@ -144,8 +152,6 @@
 
     async function loadProfile() {
 
-    console.log("TOKEN:", getToken());
-
     if (!getToken()) {
         window.location.href = "login.html";
         return;
@@ -159,6 +165,12 @@
         console.log("USER:", user);
 
         currentUser = user;
+
+        if (!user.IsAdmin) {
+
+        document.getElementById("adminBtn")
+        .style.display = "none";
+}
 
         let idText =
             user.UserId;
@@ -174,6 +186,11 @@
 
         document.getElementById("EmailText")
             .textContent = user.Email;
+    if (user.IsAdmin) {
+
+    document.getElementById("adminBtn")
+        .style.display = "block";
+}
 
     }
     catch (e) {
